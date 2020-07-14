@@ -24,3 +24,43 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+// ===================================================================================
+// ===================================================================================
+
+// applique dans alertes.page.html
+.alerte-tab-base ion-label {
+    font-size: 70.7%;
+}
+
+ion-header ion-toolbar ion-title ion-label {
+    font-size: 95%;
+}
+//  debut CSS pour les pop de pièces jointes alertes dans la pages des details d'alertes
+.my-modal-css .modal-wrapper{
+    height: 30%;
+    width: 95%;
+    position: absolute;
+    top: 30%;
+    border-radius: 5%;
+}
+
+.my-modal-css2 .modal-wrapper{
+    max-height: 60%;
+    width: 80%;
+    position: absolute;
+    top: 20%;
+    border-radius: 10%;
+}
+//  Fin CSS pour les pop de pièces jointes alertes
+
+//  CSS pour eviter le cacher le scrollbar des pages
+.no-scroll-content {
+    --offset-bottom: auto!important;
+    --overflow: hidden;
+    overflow: auto;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+}
+

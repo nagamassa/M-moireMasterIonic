@@ -1,0 +1,65 @@
+<ion-content [hidden]="!isVideo" class="no-scroll-content">
+  <iframe width="100%" height="100%" [src]="urlSafe" frameborder="0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"  allowfullscreen></iframe>
+</ion-content>
+
+<ion-content [hidden]="!isAudio" class="no-scroll-content">
+  <iframe width="100%" height="100%" [src]="urlSafe" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</ion-content>
+
+<ion-content [hidden]="!isPhoto" class="no-scroll-content">
+  <ion-card>
+    <ion-card-title>{{pc?.titre}}</ion-card-title>
+    <ion-img src="{{piece.piece}}" alt="{{piece.piece}}"></ion-img>
+  </ion-card>
+</ion-content>
+
+<ion-content [hidden]="!isTexte" class="no-scroll-content">
+  <ion-card>
+    <ion-card-content>
+      {{piece?.texto}}
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <div [ngSwitch]="piece.type">
+  <div *ngSwitchCase = "'Audio'">
+    <ion-content>
+      <iframe width="100%" height="100%" [src]="urlSafe" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </ion-content>
+  </div>
+
+  <div *ngSwitchCase = "'Vidéo'">
+    <ion-content>
+      <iframe width="100%" height="100%" [src]="urlSafe" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </ion-content>
+  </div>
+
+  <div *ngSwitchCase = "'Photo'">
+    <ion-content>
+      <ion-img src="" alt="{{piece.piece}}"></ion-img>
+    </ion-content>
+  </div>
+
+  <div *ngSwitchCase = "'Texte'">
+    <ion-card>
+      <ion-card-content>
+        {{piece.texto}}
+      </ion-card-content>
+    </ion-card>
+  </div> 
+
+
+<iframe width="100%" height="100%" [src]="urlSafe" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+-->

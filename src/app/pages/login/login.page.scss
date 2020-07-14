@@ -1,0 +1,32 @@
+ion-content {
+    content: "";
+    --background:url(../../../assets/images/logo.png) no-repeat center center / cover;    
+}
+
+.center h1 {
+    text-align: center!important;
+}
+
+
+ion-item{
+    --background: transparent;
+    color: black;
+    min-height: 40%;
+    margin: 5%;
+}
+
+ion-list{
+    background-color: transparent;
+}
+
+ion-content form{
+    position: relative;
+    top: 10%;
+}
+
+.errorMsg, h2{
+    text-align: center!important;
+    color: red;
+    font-size: 90%;
+    margin-bottom: 0px;
+}

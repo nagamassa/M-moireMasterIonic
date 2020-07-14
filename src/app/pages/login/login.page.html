@@ -1,0 +1,33 @@
+<!-- <ion-header>
+  <ion-toolbar color="mango">
+    <ion-title>Login</ion-title>
+  </ion-toolbar>
+</ion-header> -->
+  
+<ion-content padding='true' >
+  <form>
+    <div class="center">
+      <!-- <img src="assets/images/logo.png" class="smallLogo"/> -->
+      <h1>Wallu-Mobile</h1>
+      <h2>{{ deviceError }}</h2>
+    </div>
+    <ion-list>
+      <ion-item>        
+        <span class="errorMsg">{{ postError.usernameError }}</span>
+        <ion-label position="stacked"><ion-icon name="person"></ion-icon> Username </ion-label>
+        <ion-input autocomplete="off" type="text" placeholder="Username" name="username" [(ngModel)]="postData.username"></ion-input>
+      </ion-item>
+    
+      <ion-item>
+        <span class="errorMsg">{{ postError.passwordError }}</span>
+        <ion-label position="stacked"><ion-icon name="lock-open"></ion-icon> Password </ion-label>        
+        <ion-input autocomplete="off" type="password" placeholder="Password" name="password" [(ngModel)]="postData.password"></ion-input>
+      </ion-item>
+    
+      <ion-item lines='none'>
+        <a routerLink='/register'>nouveau compte</a>
+      </ion-item>
+    </ion-list>
+    <ion-button expand="block" share="round" color="success" (click)="loginAction()">Connecter</ion-button>
+  </form>
+</ion-content>

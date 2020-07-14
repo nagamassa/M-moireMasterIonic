@@ -1,0 +1,46 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Alertes en cours</ion-title>
+  </ion-toolbar>  
+  <ion-toolbar>
+    <ion-searchbar></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="no-scroll-content">
+  <ion-list>
+    {{testString}}
+    <ion-list-header  color="danger">
+      <h5>Mes alertes en cours internes</h5>
+    </ion-list-header>
+    <ion-card button *ngFor="let elem of (mesListEnCours)">
+      <ion-item>
+        <ion-icon name="warning" color="danger" slot="start"></ion-icon>
+        <ion-label [hidden]="elem.titre"> Pas de titre </ion-label>
+        <ion-label [hidden]="!elem.titre"> {{elem.titre}} </ion-label>
+        <ion-button (click)="myCoursDetails(elem)" fill="outline" slot="end"> Détails </ion-button>
+      </ion-item>    
+      <ion-card-content>
+        Alerte {{elem.profil}} en cours depuis {{elem.dateAlerte | date}} à {{elem.dateAlerte | date:'H:mm:ss' }}
+      </ion-card-content>
+    </ion-card>
+    <br>
+    <ion-list-header color="danger">
+      <h5 class="center">Mes alertes en cours externes</h5>
+    </ion-list-header>
+    <ion-card *ngFor="let elem of autreListEnCours">
+      <ion-item>
+        <ion-icon name="warning" color="danger" slot="start"></ion-icon>
+        <ion-label [hidden]="elem.titre"> Pas de titre </ion-label>
+        <ion-label [hidden]="!elem.titre"> {{elem.titre}} </ion-label>
+        <ion-button (click)="myCoursDetails(elem)" fill="outline" slot="end"> Détails </ion-button>
+      </ion-item>    
+      <ion-card-content>
+        Alerte {{elem.profil}} en cours depuis {{elem.dateAlerte | date}} à {{elem.dateAlerte | date:'H:mm:ss' }}
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
+</ion-content>

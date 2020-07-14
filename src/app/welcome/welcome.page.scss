@@ -1,0 +1,14 @@
+ion-content{
+    --background:url(../../assets/welcome.png) no-repeat center center / cover;
+}
+
+ion-content > h1 {
+    // font-size: 38px;
+    margin: 0 auto;
+    position: relative;
+    
+    top: 45%;
+    left: 30%;
+    right: 25%;
+    color:blue($color: #000000);
+}

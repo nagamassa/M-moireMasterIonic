@@ -1,0 +1,233 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Détails de l'alerte</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content scrollbar>
+  <ion-list>
+  <ion-card [hidden]="!isCoordonnees">
+    <ion-img src="{{url}}"></ion-img>
+    <ion-card-header>
+      <ion-item>
+        <ion-label> Dernières coordonnées </ion-label>
+      </ion-item><br>
+      <ion-card-subtitle>Latitude: {{coords.latitude}}</ion-card-subtitle>
+      <ion-card-subtitle>Loongitude: {{coords.longitude}}</ion-card-subtitle>
+    </ion-card-header>
+  </ion-card>
+  <ion-card [hidden]="isCoordonnees"><ion-item><ion-label> Pas d'infos sur la victime' </ion-label></ion-item></ion-card>
+    
+  <ion-card [hidden]="!isAuteur">
+    <ion-img src="{{auteur?.photo}}"></ion-img>
+    <ion-card-header>
+      <ion-item>
+        <ion-label> Victime </ion-label>
+      </ion-item><br>
+      <ion-card-subtitle>{{auteur?.first_name}} {{auteur?.last_name}} alias {{auteur?.alias}}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content class="desc">
+      <h5>Descriptions:</h5> <p> {{auteur?.description}} </p>
+    </ion-card-content>
+  </ion-card>
+  <ion-card [hidden]="isAuteur"><ion-item><ion-label> Pas d'infos sur la victime' </ion-label></ion-item></ion-card>
+
+  <ion-card [hidden]="!isPesonnesFollower">
+    <ion-card-header>
+      <ion-item>
+        <ion-label> Mes followers </ion-label>
+      </ion-item>
+    </ion-card-header>
+    <ion-card-content>
+        <!-- <ion-item class="lab" *ngFor="let f of pesonnesFollower">
+          <ion-label>{{f.follower}}</ion-label>
+          <ion-note slot="end" color="primary">{{f.reception}} - {{f.reponse}}</ion-note>
+        </ion-item> -->
+        <ion-item class="lab">
+          <ion-label>Mes followers :</ion-label>
+          <ion-note slot="end" color="primary">{{pesonnesFollower?.length}}</ion-note>
+        </ion-item>
+    </ion-card-content>
+  </ion-card>
+  <ion-card [hidden]="isPesonnesFollower"><ion-item><ion-label> Pas de followers </ion-label></ion-item></ion-card>
+
+  <ion-card [hidden]="!isGroupFollower">
+    <ion-card-header>
+      <ion-item>
+        <ion-label> Groupes followers </ion-label>
+      </ion-item>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item class="lab" *ngFor="let gf of groupFollower">
+          <ion-label>{{gf?.groupe}}</ion-label>
+          <ion-note slot="end" color="primary">{{gf?.nombreReception}} - {{gf?.nombreReponse}}</ion-note>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+  <ion-card [hidden]="isGroupFollower"><ion-item><ion-label> Pas de groupes followers </ion-label></ion-item></ion-card>
+
+  <ion-card [hidden]="!isLocaliteFollower">
+    <ion-card-header>
+      <ion-item>
+        <ion-label> Localites followers </ion-label>
+      </ion-item>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item class="lab" *ngFor="let lf of localiteFollower">
+          <ion-label>{{lf?.localite}}</ion-label>
+          <ion-note slot="end" color="primary">{{lf?.nombreReception}} - {{lf?.nombreReponse}}</ion-note>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+  <ion-card [hidden]="isLocaliteFollower"><ion-item><ion-label> Pas de localites followers </ion-label></ion-item></ion-card>
+
+  <ion-card [hidden]="!isAgencesFollower">
+    <ion-card-header>
+      <ion-item>
+        <ion-label> Agences followers </ion-label>
+      </ion-item>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item class="lab" *ngFor="let af of agencesFollower">
+          <ion-label>{{af?.localite}}</ion-label>
+          <ion-note slot="end" color="primary">{{af?.nombreReception}} - {{af?.nombreReponse}}</ion-note>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+  <ion-card [hidden]="isAgencesFollower"><ion-item><ion-label> Pas d'agences followers </ion-label></ion-item></ion-card>
+
+
+  <ion-card class="message" color="light">
+    <ion-card-header>
+      <ion-item>
+        <ion-label> Liste des messages </ion-label>
+      </ion-item>
+    </ion-card-header>
+    <ion-card-content>
+        <div class="lab" *ngFor="let pc of pieces">  
+          <ion-card button  (click)="openFile(pc)">
+            <ion-card-title class="desc">{{pc?.titre}}</ion-card-title>        
+              <div [ngSwitch]="pc.type">
+                <div *ngSwitchCase = "'Audio'">
+                  <ion-img src="{{urlaudio}}" alt="{{pc.type}}"></ion-img>                                
+                </div>        
+                <div *ngSwitchCase = "'Vidéo'">
+                  <ion-img src="{{urlvideo}}" alt="{{pc.type}}"></ion-img>                  
+                  <!-- <iframe width="100%" height="100%" [src]="urlSafe" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->
+                </div>        
+                <div *ngSwitchCase = "'Photo'">
+                  <ion-img src="{{base+pc.piece}}" alt="{{pc.type}}"></ion-img>
+                </div>
+                <div *ngSwitchCase = "'Texte'">
+                  <ion-card-content class="desc">
+                      <pre>{{ pc.texto }}</pre>
+                  </ion-card-content>
+                </div>
+              </div> 
+            <ion-item>
+              <ion-label></ion-label>
+              <ion-note slot="end" color="danger">{{pc.datePiece | date}} à {{pc.datePiece | date:'H:mm:ss' }}</ion-note>
+            </ion-item>           
+          </ion-card>
+        </div>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card [hidden]="isPieces"><ion-item><ion-label> Pas de messages </ion-label></ion-item></ion-card>
+
+</ion-list>
+
+<!-- add piece operations -->
+<ion-card [hidden]="isOther" class="areaClass">   
+  <ion-card-content>
+    <ion-textarea [(ngModel)]="textMessage" rows="1" placeholder="plus d'infos"></ion-textarea>
+  </ion-card-content>
+  <ion-item>
+    <ion-fab horizontal="start" vertical="center" slot="">  
+      <ion-fab-button (click)="presentActionSheet()" color="primary">
+        <ion-icon name="add"></ion-icon> <ion-icon name="attach-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+    <ion-fab horizontal="center" vertical="center" slot="">  
+      <ion-fab-button (click)="presentCiblesSheet()" color="primary">
+        <ion-icon name="add"></ion-icon> <ion-icon name="person-add-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+    <ion-fab horizontal="end" vertical="center" slot="">  
+      <ion-fab-button [disabled]="!textMessage" (click)="addTexte()" color="primary">
+        <ion-icon name="send-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  </ion-item>  
+</ion-card>
+
+
+
+</ion-content>
+
+
+
+
+
+
+
+<!-- <ion-fab horizontal="end" vertical="bottom" slot="fixed">
+  <ion-fab-button color="light">
+    Ajouter 
+  </ion-fab-button>
+  <ion-fab-list side="start">
+    <ion-fab-button color="light" (click)="audioActionSheet()">
+      <ion-icon name="musical-notes-outline"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-button color="light" (click)="videoActionSheet()">
+      <ion-icon name="videocam-outline"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-button color="light" (click)="photoActionSheet()">
+      <ion-icon name="image-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab-list>
+</ion-fab> -->
+
+<!-- <ion-slides [options]="config" pager="true" paginationType="bullets">
+  <ion-slide *ngFor="let pc of pieces">
+    <div [ngSwitch]="pc.type">
+      <div *ngSwitchCase = "'Audio'">
+        <ion-card button  (click)="piecemodal(pc)">
+          <ion-card-title class="desc">{{pc.type}}</ion-card-title>
+          <ion-img src="{{url}}" alt="{{pc.type}}"></ion-img>
+        </ion-card>
+      </div>
+
+      <div *ngSwitchCase = "'Vidéo'">
+        <ion-card button  (click)="piecemodal(pc)">
+          <ion-card-title class="desc">{{pc.type}}</ion-card-title>
+          <ion-img src="{{url}}" alt="{{pc.type}}"></ion-img>
+        </ion-card>
+      </div>
+
+      <div *ngSwitchCase = "'Photo'">
+        <ion-card button  (click)="piecemodal(pc)">
+          <ion-card-title class="desc">{{pc.type}}</ion-card-title>
+          <ion-img src="{{base+pc.piece}}" alt="{{pc.type}}"></ion-img>
+        </ion-card>
+      </div>
+      <div *ngSwitchCase = "'Texte'">
+        <ion-card button  (click)="piecemodal(pc)">
+          <ion-card-title class="desc">{{pc.type}}</ion-card-title>
+          <ion-card-content class="desc">
+            {{pc.texto}}
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </div>
+  </ion-slide>
+</ion-slides> -->

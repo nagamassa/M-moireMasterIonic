@@ -1,0 +1,72 @@
+<ion-content padding='true' >
+  <div class="center">
+    <!-- <img src="assets/images/logo.png" class="smallLogo"/> -->
+    <h1>Wallu-Mobile</h1>
+    <h2>{{ deviceError }}</h2>
+    <h2>{{ imageInfo }}</h2>
+  </div>
+
+  <div>
+    <image-cropper
+        [imageBase64]="base64Image"
+        [imageChangedEvent]="imageChangedEvent"
+        [maintainAspectRatio]="true"
+        [aspectRatio]="4 / 3"
+        format="png"
+        (imageCropped)="imageCropped($event)"
+        outputType="base64"
+    ></image-cropper>  
+  </div>
+  <div> 
+    <ion-button expand="full" class="ion-padding" color="primary" (change)="fileChangeEvent($event)" (click)="presentActionSheet()">Prendre une photo</ion-button>
+  </div> 
+  <div style="margin-top: 2%;">
+    <img [src]="croppedImage" />
+  </div>
+  
+
+    <ion-list>
+      <div class="info-1">
+        <ion-item>
+          <ion-input type="text" placeholder="username" [(ngModel)]="user.username"> </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input type="password" placeholder="password" [(ngModel)]="user.password"> </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input type="email" placeholder="email" [(ngModel)]="user.email"> </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input type="text" placeholder="Prénom" [(ngModel)]="user.first_name"> </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input type="text" placeholder="Nom" [(ngModel)]="user.lastt_name"> </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input type="text" placeholder="Alias" [(ngModel)]="user.alias"> </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-select placeholder="Operateur" [(ngModel)]="operateur">
+            <ion-select-option value="33">33</ion-select-option>
+            <ion-select-option value="77">77</ion-select-option>
+            <ion-select-option value="78">78</ion-select-option>
+            <ion-select-option value="76">76</ion-select-option>
+            <ion-select-option value="70">70</ion-select-option>
+          </ion-select>
+          <ion-input type="number" placeholder="numero" [(ngModel)]="numero"> </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input type="date" placeholder="Date de naissance" [(ngModel)]="user.dateNaissance"> </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-textarea placeholder="Description" [(ngModel)]="user.description"></ion-textarea>
+        </ion-item>
+
+        <ion-item lines='none'> Si vous avez déja un compte
+          <a routerLink='/login'>: Connceter ici</a>
+        </ion-item>
+      </div>
+
+    </ion-list>
+    <ion-button expand="block" share="round" color="success" (click)="tryAddUser()">Enregistrer</ion-button>
+</ion-content>
