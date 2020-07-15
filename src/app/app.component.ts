@@ -104,7 +104,6 @@ export class AppComponent implements OnInit {
 
   logoutAction() {
     this.authService.logout();
-      // this.disconnected=true;
   }
 
 
