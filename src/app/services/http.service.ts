@@ -6,7 +6,7 @@ import { headersToString } from 'selenium-webdriver/http';
 import { StorageService } from './storage.service';
 import { AuthConstants } from '../config/auth-constants';
 import { catchError, tap, map } from 'rxjs/operators';
-import { Alerte, Utilisateur, Coordonnees, PieceJointe, Suivi_Alerte_Group, Suivi_Alerte_Localite, Suivi_Alerte_Agence, Suivi_Alerte_Perso } from '../types';
+import { Alerte, Utilisateur, Coordonnees, PieceJointe, Suivi_Alerte_Group, Suivi_Alerte_Localite, Suivi_Alerte_Agence, Suivi_Alerte_Perso, Groupe, Membre } from '../types';
 
 
 @Injectable({
@@ -85,6 +85,50 @@ myLinkAlertes(serviceName: string, id: any) {
   const url = environment.apiUrl +'/'+ serviceName;
   return this.http.get<Alerte[]>(`${url} ${id}/`, options);
 }
+
+myGroupes(serviceName: string, id: any) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Groupe[]>(`${url} ${id}/myGroupes/`, options);
+}
+
+myLinkGroupes(serviceName: string, id: any) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Groupe[]>(`${url} ${id}/myGroupesLinked/`, options);
+}
+
+
+getGroupe(serviceName: string, id: any) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Groupe>(`${url} ${id}/`, options);
+}
+
+getGroupeAuteur(serviceName: string, id: any) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Utilisateur>(`${url} ${id}/auteur/`, options);
+}
+
+getGroupeMembres(serviceName: string, id: any) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Membre[]>(`${url} ${id}/membres/`, options);
+}
+// =======================================================
+getGroupeMembresUsers(serviceName: string, id: any) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Utilisateur[]>(`${url} ${id}/membres/users/`, options);
+}
+// =====================================================
 
 getAlerte(serviceName: string, id: any) {  
   const headers = new HttpHeaders({'Content-Type': 'application/json',});

@@ -7,6 +7,10 @@ const routes: Routes = [
   {
     path: '',
     component: GroupesPage
+  },
+  {
+    path: 'groupedetails/:id',
+    loadChildren: () => import('./groupedetails/groupedetails.module').then( m => m.GroupedetailsPageModule)
   }
 ];
 

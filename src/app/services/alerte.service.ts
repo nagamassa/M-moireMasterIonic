@@ -4,7 +4,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { HttpService } from './http.service';
 import { StorageService } from './storage.service';
 import { AuthConstants } from '../config/auth-constants';
-import { Alerte, Suivi_Alerte_Perso, Utilisateur, Coordonnees, PieceJointe, Suivi_Alerte_Group, Suivi_Alerte_Localite, Suivi_Alerte_Agence } from '../types';
+import { Alerte, Suivi_Alerte_Perso, Utilisateur, Coordonnees, PieceJointe, Suivi_Alerte_Group, Suivi_Alerte_Localite, Suivi_Alerte_Agence, Groupe, Membre } from '../types';
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +32,30 @@ export class AlerteService {
     return this.httpService.myLinkAlertes('wallu/alertes/others/', postData);
   }
 
+  myGroupes(postData: any): Observable<Groupe[]>{
+    return this.httpService.myGroupes('wallu/utilisateurs/', postData);
+  }
+
+  myLinkGroupes(postData: any): Observable<Groupe[]>{
+    return this.httpService.myLinkGroupes('wallu/utilisateurs/', postData);
+  }
+
+  getGroupe(postData: any): Observable<Groupe>{
+    return this.httpService.getGroupe('wallu/groupes/', postData);
+  }
+
+  getGroupeAuteur(postData: any): Observable<Utilisateur>{
+    return this.httpService.getGroupeAuteur('wallu/groupes/', postData);
+  }
+
+  getGroupeMembres(postData: any): Observable<Membre[]>{
+    return this.httpService.getGroupeMembres('wallu/groupes/', postData);
+  }
+// ===================================================
+  getGroupeMembresUsers(postData: any): Observable<Utilisateur[]>{
+    return this.httpService.getGroupeMembresUsers('wallu/groupes/', postData);
+  }
+// ====================================================
   getAlerte(postData: any): Observable<Alerte>{
     return this.httpService.getAlerte('wallu/alertes/', postData);
   }

@@ -3,13 +3,49 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Groupes</ion-title>
+    <ion-title>Mes groupes</ion-title>
+  </ion-toolbar>  
+  <ion-toolbar>
+    <ion-searchbar></ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" >
-  <div id="container">
-    <strong class="capitalize">groupes</strong>
-    <p>Explore <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
+<ion-content class="no-scroll-content">
+  <ion-list>
+    <ion-list-header  color="danger">
+      <h5>Mes propres groupes</h5>
+    </ion-list-header>
+    <ion-card button *ngFor="let elem of (MyOwneGroupes)">
+      <ion-item>
+        <ion-note slot="start" color="danger">{{elem.nombreMembre}}</ion-note>
+        <ion-label> {{elem.nom}} </ion-label>
+        <ion-button (click)="myGroupeDetails(elem)" fill="outline" slot="end"> Détails </ion-button>
+      </ion-item>    
+      <ion-card-content>
+        Groupe crée depuis {{elem.dateCreation | date}} à {{elem.dateCreation | date:'H:mm:ss' }}
+      </ion-card-content>
+    </ion-card>
+    <br>
+
+    <ion-list-header  color="danger">
+      <h5>Mes groupes associés</h5>
+    </ion-list-header>
+    <ion-card button *ngFor="let elem of (MyLinkGroupes)">
+      <ion-item>
+        <ion-note slot="start" color="danger">{{elem.nombreMembre}}</ion-note>
+        <ion-label> {{elem.nom}} </ion-label>
+        <ion-button (click)="myGroupeDetails(elem)" fill="outline" slot="end"> Détails </ion-button>
+      </ion-item>    
+      <ion-card-content>
+        Groupe crée depuis {{elem.dateCreation | date}} à {{elem.dateCreation | date:'H:mm:ss' }}
+      </ion-card-content>
+    </ion-card>
+
+  </ion-list>
+
 </ion-content>
+<ion-fab horizontal="end" vertical="bottom" slot="fixed">
+  <ion-fab-button color="primary">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
