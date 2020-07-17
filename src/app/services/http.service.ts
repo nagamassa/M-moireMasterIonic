@@ -121,13 +121,15 @@ getGroupeMembres(serviceName: string, id: any) {
   const url = environment.apiUrl +'/'+ serviceName;
   return this.http.get<Membre[]>(`${url} ${id}/membres/`, options);
 }
-// =======================================================
+
 getGroupeMembresUsers(serviceName: string, id: any) {  
   const headers = new HttpHeaders({'Content-Type': 'application/json',});
   const options = { headers: headers, withCredintials: false };
   const url = environment.apiUrl +'/'+ serviceName;
   return this.http.get<Utilisateur[]>(`${url} ${id}/membres/users/`, options);
 }
+// =======================================================
+
 // =====================================================
 
 getAlerte(serviceName: string, id: any) {  

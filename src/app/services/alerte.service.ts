@@ -51,10 +51,12 @@ export class AlerteService {
   getGroupeMembres(postData: any): Observable<Membre[]>{
     return this.httpService.getGroupeMembres('wallu/groupes/', postData);
   }
-// ===================================================
+
   getGroupeMembresUsers(postData: any): Observable<Utilisateur[]>{
     return this.httpService.getGroupeMembresUsers('wallu/groupes/', postData);
   }
+// ===================================================
+
 // ====================================================
   getAlerte(postData: any): Observable<Alerte>{
     return this.httpService.getAlerte('wallu/alertes/', postData);
