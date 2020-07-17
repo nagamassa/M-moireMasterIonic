@@ -128,8 +128,42 @@ getGroupeMembresUsers(serviceName: string, id: any) {
   const url = environment.apiUrl +'/'+ serviceName;
   return this.http.get<Utilisateur[]>(`${url} ${id}/membres/users/`, options);
 }
-// =======================================================
 
+changeMember(serviceName: string, mbr: Membre) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.put<Membre>(`${url}${mbr.groupe}/membres/${mbr.id}/`, mbr, options);
+}
+
+deleteMember(serviceName: string, mbr: Membre) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.delete<any>(`${url}${mbr.groupe}/membres/${mbr.id}/`, options);
+}
+
+addNewGroupe(serviceName: string, data: any) {
+  const headers = new HttpHeaders({  });  
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.post<Groupe>(`${url}`, data, options);
+}
+
+addNewMembre(serviceName: string, data: any) {
+  const headers = new HttpHeaders({  });  
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.post<Membre>(`${url}${data.groupe}/membres/`, data, options);
+}
+
+// =======================================================
+deleteGroupe(serviceName: string, id: any) {
+  const headers = new HttpHeaders({  });  
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.delete<any>(`${url}${id}/`, options);
+}
 // =====================================================
 
 getAlerte(serviceName: string, id: any) {  

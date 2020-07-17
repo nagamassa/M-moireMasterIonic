@@ -250,7 +250,7 @@ openFile(data:PieceJointe){
 addTexte(){
   let formData: FormData = new FormData();
     formData.append('alerte', String(this.alerteDetalis.id)); formData.append('proprio', "Alerte");
-    formData.append('type', "Texte"); formData.append('texto', this.textMessage); 
+    formData.append('type', "Texte"); formData.append('texto', this.textMessage); this.textMessage = "";
   this.alerteService.uploadPiece(formData, this.alerteDetalis.id).subscribe(data =>{
     this.toastService.presentToast("Votre texte a été bien ajouté");
     this.loadData();

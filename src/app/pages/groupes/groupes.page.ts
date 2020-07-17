@@ -11,11 +11,15 @@ import { AuthConstants } from 'src/app/config/auth-constants';
   styleUrls: ['./groupes.page.scss'],
 })
 export class GroupesPage implements OnInit {
-  public mesGroupes : Groupe[] = [];  public MyOwneGroupes : Groupe[] = [];  public MyLinkGroupes : Groupe[] = [];
+  public mesGroupes : Groupe[] = [];  public MyOwneGroupes : Groupe[] = [];  public MyLinkGroupes : Groupe[] = []; wantAdd: boolean = false;
+  newGroupe = {nombreMembre: "1", nom: ""};
+  newMembre = {user_member: "0", groupe: "0", isAdmin: "Vrai" , isFondateur: "Vrai"};
 
   constructor(private alerteService: AlerteService, public storageService: StorageService, private router: Router, private activatedRoute: ActivatedRoute,) { }
 
-  ngOnInit () {    
+  ngOnInit () { this.loadData(); }
+
+  loadData(){
     this.storageService.get(AuthConstants.AUTHDATA).then(res =>{
       this.alerteService.myGroupes(res.id).subscribe(res1=>{
         this.mesGroupes = res1; this.MyOwneGroupes = this.mesGroupes;
@@ -23,9 +27,32 @@ export class GroupesPage implements OnInit {
       this.alerteService.myLinkGroupes(res.id).subscribe(res2=>{
         this.mesGroupes = res2; this.MyLinkGroupes = this.mesGroupes;        
       },er=>{console.log(er); });
-    },err => { console.log('erreur getting local data', JSON.stringify(err)); });    
+    },err => { console.log('erreur getting local data', JSON.stringify(err)); });
   }
+
   myGroupeDetails(elem){
-    this.router.navigate(['/folder/groupes/groupedetails/',elem.id]);    
+    this.router.navigate(['/folder/groupes/groupedetails/',elem.id]);
+  }
+
+  addGroupe(){
+    this.router.navigate(['/folder/groupes/newgroupe/']);  
+  }
+
+  addGroupeArea(){
+    if(this.wantAdd==true){this.wantAdd=false;}
+    else if(this.wantAdd==false){this.wantAdd=true;}
+  }
+
+  addNewGroupe(){  
+  this.alerteService.addNewGroupe(this.newGroupe).subscribe(gr =>{
+    this.newGroupe.nom = ""; this.loadData();
+    this.storageService.get(AuthConstants.AUTHDATA).then(res1 =>{
+      this.newMembre.groupe = String(gr.id); this.newMembre.user_member = res1.id;
+      this.alerteService.addNewMembre(this.newMembre).subscribe(data =>{
+        this.newMembre.groupe = "0"; this.newMembre.user_member = "0"; this.loadData();        
+      },(error: any) => { console.log("Error add membre", JSON.stringify(error)); });
+    },err => { console.log('erreur getting local data', JSON.stringify(err)); });    
+  },(error: any) => { console.log("Error add groupe", JSON.stringify(error)); });
+    
   }
 }

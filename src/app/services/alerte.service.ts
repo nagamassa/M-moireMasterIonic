@@ -55,9 +55,29 @@ export class AlerteService {
   getGroupeMembresUsers(postData: any): Observable<Utilisateur[]>{
     return this.httpService.getGroupeMembresUsers('wallu/groupes/', postData);
   }
-// ===================================================
 
+  changeMember(postData: Membre): Observable<Membre>{
+    return this.httpService.changeMember('wallu/groupes/', postData);
+  }
+
+  deleteMember(postData: Membre): Observable<any>{
+    return this.httpService.deleteMember('wallu/groupes/', postData);
+  }
+
+  addNewGroupe(postData: any): Observable<Groupe>{
+    return this.httpService.addNewGroupe('wallu/groupes/', postData);
+  }
+
+  addNewMembre(postData: any): Observable<Membre>{
+    return this.httpService.addNewMembre('wallu/groupes/', postData);
+  }
+
+// ===================================================
+  deleteGroupe(postData: any): Observable<any>{
+    return this.httpService.deleteGroupe('wallu/groupes/', postData);
+  }
 // ====================================================
+
   getAlerte(postData: any): Observable<Alerte>{
     return this.httpService.getAlerte('wallu/alertes/', postData);
   }

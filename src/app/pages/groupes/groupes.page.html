@@ -41,11 +41,28 @@
       </ion-card-content>
     </ion-card>
 
+
   </ion-list>
 
+
 </ion-content>
+
+<!-- Nouveau groupe -->
+<ion-card style=" padding-top: 0px; width: 88%; position: fixed; bottom: 0px;" horizontal="middle" vertical="middle" slot="fixed" [hidden]="!wantAdd">   
+  <ion-card-content>
+    <ion-textarea [(ngModel)]="newGroupe.nom" rows="1" placeholder="Nom du groupe"></ion-textarea>
+  </ion-card-content>
+  <ion-item>
+    <ion-button (click)="addNewGroupe()" [disabled]="!newGroupe.nom" color="success" fill="outline" slot="start"> Ajouter </ion-button>
+  </ion-item>  
+</ion-card>
+<!--  -->
+
+<!-- Bouton ajout groupe -->
 <ion-fab horizontal="end" vertical="bottom" slot="fixed">
-  <ion-fab-button color="primary">
-    <ion-icon name="add"></ion-icon>
+  <ion-fab-button (click)="addGroupeArea()" color="primary">
+    <ion-icon [hidden]="wantAdd" name="add"></ion-icon>
+    <ion-icon [hidden]="!wantAdd" name="remove-circle"></ion-icon>
   </ion-fab-button>
 </ion-fab>
+<!--  -->
