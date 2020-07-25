@@ -4,7 +4,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { HttpService } from './http.service';
 import { StorageService } from './storage.service';
 import { AuthConstants } from '../config/auth-constants';
-import { Alerte, Suivi_Alerte_Perso, Utilisateur, Coordonnees, PieceJointe, Suivi_Alerte_Group, Suivi_Alerte_Localite, Suivi_Alerte_Agence, Groupe, Membre } from '../types';
+import { Alerte, Suivi_Alerte_Perso, Utilisateur, Coordonnees, PieceJointe, Suivi_Alerte_Group, Suivi_Alerte_Localite, Suivi_Alerte_Agence, Groupe, Membre, Localite } from '../types';
 
 @Injectable({
   providedIn: 'root'
@@ -72,9 +72,45 @@ export class AlerteService {
     return this.httpService.addNewMembre('wallu/groupes/', postData);
   }
 
-// ===================================================
   deleteGroupe(postData: any): Observable<any>{
     return this.httpService.deleteGroupe('wallu/groupes/', postData);
+  }
+
+  ajouterGroupeTarget(postData: Suivi_Alerte_Group): Observable<Suivi_Alerte_Group> {
+    return this.httpService.ajouterGroupeTarget('wallu/alertes/', postData);
+  }
+
+  getAlerteUsersFollower(postData: any): Observable<Utilisateur[]>{
+    return this.httpService.getAlerteUsersFollower('wallu/alertes/', postData);
+  }
+
+  getAlerteGroupsData(postData: any): Observable<Groupe[]>{
+    return this.httpService.getAlerteGroupsData('wallu/alertes/', postData);
+  }
+
+  getAlerteLocalitesData(postData: any): Observable<Localite[]>{
+    return this.httpService.getAlerteLocalitesData('wallu/alertes/', postData);
+  }
+
+  allLocalites(): Observable<Localite[]>{
+    return this.httpService.allLocalites('wallu/localites/');
+  }
+
+  ajouterLocaliteTarget(postData: any): Observable<Suivi_Alerte_Localite>{
+    return this.httpService.ajouterLocaliteTarget('wallu/alertes/', postData);
+  }
+
+  getLocaliteUsers(postData: any): Observable<Utilisateur[]>{
+    return this.httpService.getLocaliteUsers('wallu/localites/', postData);
+  }
+
+  changeSuiviAlertePerso(postData: Suivi_Alerte_Perso): Observable<Suivi_Alerte_Perso> {
+    return this.httpService.changeSuiviAlertePerso('wallu/alertes/suivi_perso/', postData);
+  }
+
+// ===================================================
+  getSuiviAlertePersoFilter(postData: Suivi_Alerte_Perso): Observable<Suivi_Alerte_Perso> {
+    return this.httpService.changeSuiviAlertePerso('wallu/alertes/suivi_perso/', postData);
   }
 // ====================================================
 

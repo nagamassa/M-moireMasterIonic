@@ -34,13 +34,9 @@ export class GroupesPage implements OnInit {
     this.router.navigate(['/folder/groupes/groupedetails/',elem.id]);
   }
 
-  addGroupe(){
-    this.router.navigate(['/folder/groupes/newgroupe/']);  
-  }
-
   addGroupeArea(){
-    if(this.wantAdd==true){this.wantAdd=false;}
-    else if(this.wantAdd==false){this.wantAdd=true;}
+    if(this.wantAdd==true){this.wantAdd=false; this.newGroupe.nom = "";}
+    else if(this.wantAdd==false){this.wantAdd=true; this.newGroupe.nom = "";}
   }
 
   addNewGroupe(){  

@@ -13,7 +13,10 @@ import { Network } from '@ionic-native/network/ngx';
 import { ToastService } from './services/toast.service';
 import { AlerteService } from './services/alerte.service';
 import { AuthConstants } from './config/auth-constants';
-import { Coordonnees } from './types';
+import { Coordonnees, Suivi_Alerte_Perso } from './types';
+import * as moment from "moment";
+import 'moment/locale/pt-br';
+import { PushservicesService } from './services/pushservices.service';
 
 @Component({
   selector: 'app-root',
@@ -21,11 +24,13 @@ import { Coordonnees } from './types';
   styleUrls: ['app.component.scss']
 })
 export class AppComponent implements OnInit {
-  disconnected:Boolean=false;
-  address: string;
+
+  suiviAlertePerso: Suivi_Alerte_Perso = {alerte: null, follower: null, reception: "Vrai", reponse: "Vrai",
+  DateReception: null, DateReponse: null}; 
+  
+  disconnected:Boolean=false; address: string;
   coordonnees = {alerte: null,dateCoordonnees: '',longitude: 1.0,latitude: 1.0}
-  displayUserData: any;
-  public selectedIndex = 0;
+  displayUserData: any; public selectedIndex = 0;
   public appPages = [
     {
       title: 'Alertes',
@@ -75,7 +80,7 @@ export class AppComponent implements OnInit {
     private router: Router, private authService: AuthService, public network : Network,
     public toastService : ToastService, public storageService : StorageService,
     public alerteService : AlerteService, private geolocation: Geolocation, 
-    private nativeGeocoder: NativeGeocoder,
+    private nativeGeocoder: NativeGeocoder, private PushService: PushservicesService,
   ) {
     this.initializeApp();
   }
@@ -85,6 +90,8 @@ export class AppComponent implements OnInit {
       this.statusBar.styleDefault();
       this.router.navigateByUrl('login');
       this.splashScreen.hide();
+
+      this.PushService.initPush();
     });
   }
 
@@ -109,8 +116,17 @@ export class AppComponent implements OnInit {
 
   lancerAlerteDirect(){
     this.storageService.get(AuthConstants.AUTHDATA).then(res =>{
-      this.alerteService.lancerAlerteDirect(res).subscribe(res=>{
-        this.coordonnees.alerte = res.id;
+      this.alerteService.lancerAlerteDirect(res).subscribe(res2=>{
+        this.suiviAlertePerso.alerte = res2.id; this.suiviAlertePerso.follower = res.id;
+        moment.locale('fr');
+        const now = moment().format("YYYY-MM-DDTHH:mm:ss");
+        this.suiviAlertePerso.DateReception = String(now);
+        this.suiviAlertePerso.DateReponse = String(now); 
+        this.alerteService.ajouterPersonTarget(this.suiviAlertePerso).subscribe(res=>{
+          console.log("cible personne bien ajouté", JSON.stringify(res));
+        },er=>{console.log("Erreur ajout de cible personne: ",JSON.stringify(er));});
+        // 
+        this.coordonnees.alerte = res2.id;
         this.geolocation.getCurrentPosition().then((resp) => {
           this.coordonnees.latitude = resp.coords.latitude;
           this.coordonnees.longitude = resp.coords.longitude;
@@ -125,11 +141,9 @@ export class AppComponent implements OnInit {
          });         
          let watch = this.geolocation.watchPosition();
          watch.subscribe((data) => {
-          // data can be a set of coordinates, or an error (if an error occurred).
-          // data.coords.latitude
-          // data.coords.longitude
          }); 
-         this.router.navigate(['/folder/alertes/options/coursalerte/mycoursdetails',res.id]); 
+         this.router.navigate(['/folder/alertes/options/coursalerte/mycoursdetails',res2.id]);
+         // 
       }, err =>{
         console.log(JSON.stringify(err));        
       });

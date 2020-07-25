@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+// apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -32,6 +33,7 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
+    // implementation 'com.google.firebase:firebase-analytics:17.2.2'
 }
 
 apply from: 'capacitor.build.gradle'
@@ -44,3 +46,36 @@ try {
 } catch(Exception e) {
     logger.warn("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
 }
+
+
+
+
+
+// // 
+// buildscript {
+//   repositories {
+//     // Check that you have the following line (if not, add it):
+//     google()  // Google's Maven repository
+//   }
+//   dependencies {
+//     ...
+//     // Add this line
+//     classpath 'com.google.gms:google-services:4.3.3'
+//   }
+// }
+
+// allprojects {
+//   ...
+//   repositories {
+//     // Check that you have the following line (if not, add it):
+//     google()  // Google's Maven repository
+//     ...
+//   }
+// }
+// // 
+
+
+
+
+
+

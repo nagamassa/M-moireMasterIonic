@@ -5,6 +5,7 @@ import { HttpService } from './http.service';
 import { StorageService } from './storage.service';
 import { AuthConstants } from '../config/auth-constants';
 import { AppComponent } from '../app.component';
+import { Capacitor } from '@capacitor/core';
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +31,11 @@ export class AuthService {
     return this.httpService.change_password(id, pass);
   }
 
+  // 
+  change_notification(id: any, idNotification: string): Observable<any> {
+    return this.httpService.change_notification(id, idNotification);
+  }
+  // 
   getUserData(postData: any): Observable<any> {
     return this.httpService.getLogged('auth/users/me/', postData);
   }
@@ -47,10 +53,14 @@ export class AuthService {
   }
 
   logout() {
+    this.storageService.get(AuthConstants.AUTHDATA).then(res => {
+      this.change_notification(res.id, "nothing").subscribe(res2=>{},er=>{});      
+    });
     this.storageService.removeItem(AuthConstants.AUTH).then(res => {
       this.storageService.clear();
       this.userData$.next('');
-      this.router.navigate(['/login']);
     });
+    
+    this.router.navigate(['/login']);
   }
 }

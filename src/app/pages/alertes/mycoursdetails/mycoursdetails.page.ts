@@ -4,7 +4,7 @@ import { environment } from 'src/environments/environment';
 import { AlerteService } from 'src/app/services/alerte.service';
 import { AuthConstants } from 'src/app/config/auth-constants';
 import { StorageService } from 'src/app/services/storage.service';
-import { Alerte, Utilisateur, Coordonnees, PieceJointe, Suivi_Alerte_Group, Suivi_Alerte_Localite, Suivi_Alerte_Agence, Suivi_Alerte_Perso } from 'src/app/types';
+import { Alerte, Utilisateur, Coordonnees, PieceJointe, Suivi_Alerte_Group, Suivi_Alerte_Localite, Suivi_Alerte_Agence, Suivi_Alerte_Perso, Groupe, Localite } from 'src/app/types';
 import { Observable } from 'rxjs';
 import {Camera, CameraOptions} from '@ionic-native/Camera/ngx';
 import { MediaCapture, MediaFile, CaptureError, CaptureImageOptions } from '@ionic-native/media-capture/ngx';
@@ -25,8 +25,10 @@ import { ToastService } from 'src/app/services/toast.service';
 import { Contacts, Contact, ContactField, ContactName } from '@ionic-native/contacts/ngx';
 import { CallNumber } from '@ionic-native/call-number/ngx';
 import { SMS } from '@ionic-native/sms/ngx';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
 
-
+import { Plugins, Capacitor } from '@capacitor/core';
+const { PushNotifications } = Plugins;
 
 
 @Component({
@@ -35,6 +37,8 @@ import { SMS } from '@ionic-native/sms/ngx';
   styleUrls: ['./mycoursdetails.page.scss'],
 })
 export class MycoursdetailsPage implements OnInit {
+  map:any;  marker:any; latitude:any=""; longitude:any="";  timestamp:any=""; deviceToken: string = "";
+
   base:string = environment.apiUrl; base64Image:any; 
   newPiece = {id: null,article: null,alerte: null,proprio: '',type: '',titre: '',piece: null, texto: '',datePiece: null}
   url= '../../../assets/map.png'; urlaudio= '../../../assets/audio.png'; urlvideo= '../../../assets/video.png';
@@ -43,13 +47,16 @@ export class MycoursdetailsPage implements OnInit {
   auteur: Utilisateur;                        isAuteur: boolean = false;
   coordonnees: Coordonnees[];                 isCoordonnees: boolean = false;
   pieces: PieceJointe[];                      isPieces: boolean = false;
-  groupFollower: Suivi_Alerte_Group[];        isGroupFollower: boolean = false;
-  localiteFollower: Suivi_Alerte_Localite[];  isLocaliteFollower: boolean = false;
-  agencesFollower: Suivi_Alerte_Agence[];     isAgencesFollower: boolean = false;
-  pesonnesFollower: Suivi_Alerte_Perso[];      isPesonnesFollower: boolean = false;
-  
-  textMessage: string = ""; coords : {} = {};  type: string = "";
+  groupFollower: Suivi_Alerte_Group[];        isGroupFollower: boolean = false;    isGroupView: boolean = false;
+  localiteFollower: Suivi_Alerte_Localite[];  isLocaliteFollower: boolean = false; isLocaliteView: boolean = false;
+  agencesFollower: Suivi_Alerte_Agence[];     isAgencesFollower: boolean = false;  isAgencesView: boolean = false;
+  pesonnesFollower: Suivi_Alerte_Perso[];     isPesonnesFollower: boolean = false; isPesonnesView: boolean = true;
 
+  usersFollower: Utilisateur[]=[];            nbFollowerRecus: number = 0;         nbFollowerRepondu: number = 0;
+  groupFollowerData: Groupe[]=[];             localiteFollowerData: Localite[]=[];
+  nbNotYet: number = 0;                       wantAdd: boolean = false;
+
+  textMessage: string = ""; coords : {} = {};  type: string = "";
   isOther: boolean = true;
 
   constructor(private authService: AuthService, public alerteService : AlerteService, public piecesService : PiecesService,
@@ -59,8 +66,9 @@ export class MycoursdetailsPage implements OnInit {
     private transfer: FileTransfer, private streamingMedia: StreamingMedia, private photoViewer: PhotoViewer,
     public sanitizer: DomSanitizer, private videoPlayer: VideoPlayer, private toastService : ToastService,
     public fileChooser:FileChooser, private contacts: Contacts, private callNumber: CallNumber,
-    private sms: SMS, 
-    ){  }
+    private sms: SMS, public platform: Platform, public geolocation: Geolocation,
+    ){ }
+
 
 config = { spaceBetween: 0, centeredSlides: true, slidesPerView: 1.4, loop:true, autplay: false }
 
@@ -78,8 +86,10 @@ async piecemodal(pc:PieceJointe){
   } 
 }
 
-ngOnInit() { 
-  this.loadData();
+ngOnInit() { this.loadData(); }
+
+resetBadgeCount() {
+  PushNotifications.removeAllDeliveredNotifications();
 }
 
 async loadData(){
@@ -107,9 +117,24 @@ async loadData(){
                 let i=0; for(let elem of this.agencesFollower){ i++;} if(i){this.isAgencesFollower = true;}
                 this.alerteService.getAlerteFollower(ALERTEID).subscribe(res8=>{
                   this.pesonnesFollower = res8;
-                  let i=0; for(let elem of this.pesonnesFollower){ i++;} if(i){this.isPesonnesFollower = true;}
+                  this.nbFollowerRepondu=0; this.nbFollowerRecus=0; this.nbNotYet=0;
+                  let i=0; for(let elem of this.pesonnesFollower){
+                    i++;  
+                    if(elem.reponse=="Vrai"){this.nbFollowerRepondu=this.nbFollowerRepondu+1; this.nbFollowerRecus=this.nbFollowerRecus+1;}
+                    else if(elem.reception=="Vrai"){this.nbFollowerRecus=this.nbFollowerRecus+1;}
+                    else if(elem.reception=="Faux"){this.nbNotYet=this.nbNotYet+1;}                    
+                  } if(i){this.isPesonnesFollower = true;}
                   this.storageService.get(AuthConstants.AUTHDATA).then(res9 =>{
                     if(res9.id == this.alerteDetalis.auteur){ this.isOther=false}
+                    this.alerteService.getAlerteUsersFollower(ALERTEID).subscribe(res10=>{
+                      for(let sf of this.pesonnesFollower){ for(let f of res10){ if(sf.follower==f.id){this.usersFollower.push(f); this.usersFollower[this.usersFollower.length-1].photo = environment.apiUrl + this.usersFollower[this.usersFollower.length-1].photo;}}} 
+                      this.alerteService.getAlerteGroupsData(ALERTEID).subscribe(res11=>{
+                        for(let sg of this.groupFollower){for(let g of res11){ if(sg.groupe==g.id){this.groupFollowerData.push(g);}}}
+                        this.alerteService.getAlerteLocalitesData(ALERTEID).subscribe(res12=>{
+                          for(let sl of this.localiteFollower){for(let l of res12){ if(sl.localite==l.id){this.localiteFollowerData.push(l);}}}
+                        },er=>{console.log(er);})
+                      },er=>{console.log(er);})
+                    },er=>{console.log(er);})
                   },er=>{console.log(er);})
                 },er=>{console.log(er);})
               },er=>{console.log(er);})
@@ -144,10 +169,10 @@ async presentCiblesSheet() {
   const actionSheet =await this.actionSheetCtrl.create({    
     buttons: [
       { text: 'Groupe', icon: 'people-circle',
-        handler: () => {  }
+        handler: () => { this.newGroupeFollower(); }
       },
       { text: 'Localite', icon: 'map', 
-        handler: () => {  }
+        handler: () => { this.newLocaliteFollower(); }
       },{ text: 'Agence', icon: 'business', 
         handler: () => {  }
       },{ text: 'Contact', icon: 'person-circle', 
@@ -160,23 +185,6 @@ async presentCiblesSheet() {
 // Fin des actionsheets
 
 // Debut des fonctions called par les actionsheets
-openCamera(){
-  const options : CameraOptions = { quality : 100, targetHeight:500, targetWidth:500,
-     destinationType:this.camera.DestinationType.DATA_URL, encodingType:this.camera.EncodingType.JPEG,
-    mediaType:this.camera.MediaType.PICTURE
-  }
-  this.camera.getPicture(options).then((imageData)=>{ this.base64Image = 'data:image/jpeg;base64,' + imageData;},
-  (err)=>{  });
-}
-
-openGallery(){
-  const options : CameraOptions = { quality : 100, targetHeight:500, targetWidth:500,
-     sourceType:this.camera.PictureSourceType.PHOTOLIBRARY, destinationType:this.camera.DestinationType.DATA_URL,
-    encodingType:this.camera.EncodingType.JPEG, mediaType:this.camera.MediaType.PICTURE,
-  }
-  this.camera.getPicture(options).then((imageData)=>{ this.base64Image = 'data:image/jpeg;base64,' + imageData;},
-  (err)=>{ });
-}
 
 recordAudio(){
   this.mediaCapture.captureAudio().then(
@@ -221,8 +229,6 @@ addPiece(data:any, type: string){
   var options = { fileKey: "piece", fileName: fileName, chunkedMode: false,   mimeType: "multipart/form-data",
     params : {alerte: String(this.alerteDetalis.id), proprio: "Alerte", type: type},
     headers: {Connection: "close"},
-    // httpMethod: 'PUT',
-    // headers: {'Authorization':'Bearer ' + val, 'Content-Type': 'application/x-www-form-urlencoded'}
   };
   const fileTransfer: FileTransferObject = this.transfer.create();
   const url = environment.apiUrl +'/wallu/alertes/'+ this.alerteDetalis.id +'/piecesUpload/';
@@ -236,12 +242,9 @@ addPiece(data:any, type: string){
 openFile(data:PieceJointe){
   const path = environment.apiUrl + data.piece;
   if(data.type == "Audio"){    
-    // const audioFile: MediaObject = this.media.create(path);
     this.streamingMedia.playAudio(path);
   }else if(data.type == "Vidéo"){
-    this.piecemodal(data);
-    // let options: StreamingVideoOptions = { successCallback: ()=>{console.log();}, errorCallback : ()=>{console.log();}, orientation : 'portrait' }
-    // this.streamingMedia.playVideo(path, options );    
+    this.piecemodal(data);   
   }else if(data.type == "Photo"){
     this.photoViewer.show(path, 'Mon image');
   }else if(data.type == "Texte"){ }
@@ -338,9 +341,33 @@ loadContact(){
   this.router.navigate(['/folder/alertes/options/coursalerte/contactsalerte', this.alerteDetalis.id]);    
 }
 
+newGroupeFollower(){
+  this.router.navigate(['/folder/alertes/options/coursalerte/contactsalerte', this.alerteDetalis.id,'newgroupefollowers']);    
+}
+
+newLocaliteFollower(){
+  this.router.navigate(['/folder/alertes/options/coursalerte/contactsalerte', this.alerteDetalis.id,'newlocalitefollowers']);    
+}
+
+seeFollower(){
+  this.isGroupView = false; this.isLocaliteView = false; this.isAgencesView = false; this.isPesonnesView = true;
+}
+seeGroupFollower(){
+  this.isGroupView = true; this.isLocaliteView = false; this.isAgencesView = false; this.isPesonnesView = false;
+}
+seeLocaliteFollower(){
+  this.isGroupView = false; this.isLocaliteView = true; this.isAgencesView = false; this.isPesonnesView = false;
+}
+seeAgencesFollower(){
+  this.isGroupView = false; this.isLocaliteView = false; this.isAgencesView = true; this.isPesonnesView = false;
+}
+
+addPieceArea(){
+  if(this.wantAdd==true){this.wantAdd=false; this.textMessage = "";}
+  else if(this.wantAdd==false){this.wantAdd=true; this.textMessage = "";}
+}
 
 
-// Fin fonction d'ajout de piece
 
 
 

@@ -82,6 +82,14 @@ export class GroupedetailsPage implements OnInit {
     },er=>{console.log(" Erreur suppression Groupe", JSON.stringify(er));});
   }
 
+  goTocontact(){
+    const GROUPEID = this.activatedRoute.snapshot.params["id"];      
+    this.alerteService.getGroupe(GROUPEID).subscribe(res1=>{
+      this.groupeDetalis=res1;  if(this.groupeDetalis){this.isGroupeDetalis = true;}      
+      this.router.navigate(['/folder/groupes/contactsgroupe/', this.groupeDetalis.id]);
+    },er=>{console.log(er);});
+  }
+
 
 
 

@@ -1,20 +1,20 @@
 export interface Utilisateur {
-    id: number; last_login?: string; is_superuser: boolean; username: string; first_name?: string; 
+    id?: number; last_login?: string; is_superuser: boolean; username: string; first_name?: string; 
     last_name?: string; is_staff: boolean; is_active: boolean; date_joined: string; email: string;
-    blocage: string; profil: string; statut: string; alias?: any; phone?: any; dateNaissance?: any;
+    blocage: string; profil: string; statut: string; alias?: any; idNotification?:string; phone?: any; dateNaissance?: any;
     description?: string; photo?: string; localite?: any;
 }
 
 export interface Localite {
-    id: number; region: string; adresse: string;
+    id?: number; region?: string; adresse?: string;
 }
 
 export interface Groupe {
-    id: number; nombreMembre: number; nom: string; dateCreation: string;
+    id?: number; nombreMembre?: number; nom?: string; dateCreation?: string;
 }
 
 export interface Membre {
-    id: number; user_member: number; groupe: number; isAdmin: string; isFondateur: string; dateJoined: string;
+    id?: number; user_member?: number; groupe?: number; isAdmin?: string; isFondateur?: string; dateJoined?: string;
 }
 
 export interface Alerte {
@@ -32,11 +32,11 @@ export interface Suivi_Alerte_Perso {
 }
 
 export interface Suivi_Alerte_Group {
-    id: number; alerte: number; groupe: number; nombreReception: number; nombreReponse: number;
+    id?: number; alerte?: number; groupe?: number; nombreReception?: number; nombreReponse?: number;
 }
 
 export interface Suivi_Alerte_Localite {
-    id: number; alerte: number; localite: number; nombreReception: number; nombreReponse: number;
+    id?: number; alerte?: number; localite?: number; nombreReception?: number; nombreReponse?: number;
 }
 
 export interface Suivi_Alerte_Agence {

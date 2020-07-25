@@ -11,6 +11,10 @@ const routes: Routes = [
   {
     path: 'groupedetails/:id',
     loadChildren: () => import('./groupedetails/groupedetails.module').then( m => m.GroupedetailsPageModule)
+  },
+  {
+    path: 'contactsgroupe/:id',
+    loadChildren: () => import('./contactsgroupe/contactsgroupe.module').then( m => m.ContactsgroupePageModule)
   }
 ];
 

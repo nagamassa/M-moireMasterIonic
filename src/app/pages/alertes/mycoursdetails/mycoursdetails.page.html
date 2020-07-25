@@ -7,7 +7,8 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content scrollbar>
+<ion-content fullscreen="true">
+  <ion-button (click)="resetBadgeCount()" expand="block"></ion-button>
   <ion-list>
   <ion-card [hidden]="!isCoordonnees">
     <ion-img src="{{url}}"></ion-img>
@@ -31,80 +32,115 @@
     </ion-card-header>
     <ion-card-content class="desc">
       <h5>Descriptions:</h5> <p> {{auteur?.description}} </p>
+
     </ion-card-content>
   </ion-card>
   <ion-card [hidden]="isAuteur"><ion-item><ion-label> Pas d'infos sur la victime' </ion-label></ion-item></ion-card>
-
-  <ion-card [hidden]="!isPesonnesFollower">
-    <ion-card-header>
-      <ion-item>
-        <ion-label> Mes followers </ion-label>
-      </ion-item>
-    </ion-card-header>
-    <ion-card-content>
-        <!-- <ion-item class="lab" *ngFor="let f of pesonnesFollower">
-          <ion-label>{{f.follower}}</ion-label>
-          <ion-note slot="end" color="primary">{{f.reception}} - {{f.reponse}}</ion-note>
-        </ion-item> -->
-        <ion-item class="lab">
-          <ion-label>Mes followers :</ion-label>
-          <ion-note slot="end" color="primary">{{pesonnesFollower?.length}}</ion-note>
+  <!--  -->
+  <ion-toolbar>
+    <ion-segment value="follower">
+      <ion-segment-button (click)="seeFollower()" value="follower"><ion-icon name="person-circle"></ion-icon></ion-segment-button>
+      <ion-segment-button (click)="seeGroupFollower()" value="groupFollower"><ion-icon name="people-circle"></ion-icon></ion-segment-button>
+      <ion-segment-button (click)="seeLocaliteFollower()" value="localiteFollower"><ion-icon name="map"></ion-icon></ion-segment-button>
+      <ion-segment-button (click)="seeAgencesFollower()" value="agencesFollower"><ion-icon name="business"></ion-icon></ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>          
+<!--  -->
+  <div [hidden]="!isPesonnesView">
+    <ion-card [hidden]="!isPesonnesFollower">
+      <ion-card-header>
+        <ion-item>
+          <ion-label> Mes followers: {{pesonnesFollower?.length}} </ion-label>
         </ion-item>
-    </ion-card-content>
-  </ion-card>
-  <ion-card [hidden]="isPesonnesFollower"><ion-item><ion-label> Pas de followers </ion-label></ion-item></ion-card>
+      </ion-card-header>
+      <ion-card-content>
+          <ion-item>
+            <ion-note slot="end" ><h2><ion-icon name="checkmark-done-outline"></ion-icon>{{nbNotYet}}</h2></ion-note>
+            <ion-note slot="end" color="primary"><h2><ion-icon name="checkmark-done-outline"></ion-icon>{{nbFollowerRecus}}</h2></ion-note>
+            <ion-note slot="end" color="success"><h2><ion-icon name="checkmark-done-outline"></ion-icon>{{nbFollowerRepondu}}</h2></ion-note>
+          </ion-item>
+          <ion-item-sliding *ngFor="let f of pesonnesFollower; let i = index">
+            <ion-item >
+              <ion-avatar slot="start">  <img [src]="usersFollower[i]?.photo">  </ion-avatar>
+              <ion-label><p>{{usersFollower[i]?.alias}} </p> </ion-label>
+              <!--  -->
+              <div [ngSwitch]="f.reception">      
+                <div *ngSwitchCase = "'Vrai'">
+                  <div [ngSwitch]="f.reponse">      
+                    <div *ngSwitchCase = "'Vrai'">
+                      <ion-note slot="end" color="success"><h2><ion-icon name="checkmark-done-outline"></ion-icon></h2></ion-note>
+                    </div>        
+                    <div *ngSwitchCase = "'Faux'">
+                      <ion-note slot="end" color="primary"><h2><ion-icon name="checkmark-done-outline"></ion-icon></h2></ion-note>
+                    </div>
+                  </div>
+                </div>        
+                <div *ngSwitchCase = "'Faux'">
+                  <ion-note slot="end" ><h2><ion-icon name="checkmark-done-outline"></ion-icon></h2></ion-note>
+                </div>
+              </div>
+              <!--  -->
+            </ion-item>
+          </ion-item-sliding>          
+      </ion-card-content>
+    </ion-card>
+    <ion-card [hidden]="isPesonnesFollower"><ion-item><ion-label> Pas de followers </ion-label></ion-item></ion-card>
+  </div>
 
-  <ion-card [hidden]="!isGroupFollower">
-    <ion-card-header>
-      <ion-item>
-        <ion-label> Groupes followers </ion-label>
-      </ion-item>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-list>
-        <ion-item class="lab" *ngFor="let gf of groupFollower">
-          <ion-label>{{gf?.groupe}}</ion-label>
-          <ion-note slot="end" color="primary">{{gf?.nombreReception}} - {{gf?.nombreReponse}}</ion-note>
+  <div [hidden]="!isGroupView">
+    <ion-card [hidden]="!isGroupFollower">
+      <ion-card-header>
+        <ion-item>
+          <ion-label> Groupes followers </ion-label>
         </ion-item>
-      </ion-list>
-    </ion-card-content>
-  </ion-card>
-  <ion-card [hidden]="isGroupFollower"><ion-item><ion-label> Pas de groupes followers </ion-label></ion-item></ion-card>
+      </ion-card-header>
+      <ion-card-content>
+          <ion-item class="lab" *ngFor="let gf of groupFollower; let i = index">
+            <ion-label>{{ groupFollowerData[i]?.nom }}</ion-label>
+            <!-- <ion-note slot="end" color="primary">{{gf?.nombreReception}} - {{gf?.nombreReponse}}</ion-note> -->
+          </ion-item>
+      </ion-card-content>
+    </ion-card>
+    <ion-card [hidden]="isGroupFollower"><ion-item><ion-label> Pas de groupes followers </ion-label></ion-item></ion-card>
+  </div>
 
-  <ion-card [hidden]="!isLocaliteFollower">
-    <ion-card-header>
-      <ion-item>
-        <ion-label> Localites followers </ion-label>
-      </ion-item>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-list>
-        <ion-item class="lab" *ngFor="let lf of localiteFollower">
-          <ion-label>{{lf?.localite}}</ion-label>
-          <ion-note slot="end" color="primary">{{lf?.nombreReception}} - {{lf?.nombreReponse}}</ion-note>
+  <div [hidden]="!isLocaliteView">
+    <ion-card [hidden]="!isLocaliteFollower">
+      <ion-card-header>
+        <ion-item>
+          <ion-label> Localites followers </ion-label>
         </ion-item>
-      </ion-list>
-    </ion-card-content>
-  </ion-card>
-  <ion-card [hidden]="isLocaliteFollower"><ion-item><ion-label> Pas de localites followers </ion-label></ion-item></ion-card>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item class="lab" *ngFor="let lf of localiteFollower; let i = index">
+            <ion-label>{{localiteFollowerData[i]?.region}} / {{localiteFollowerData[i]?.adresse}} </ion-label>
+            <!-- <ion-note slot="end" color="primary">{{lf?.nombreReception}} - {{lf?.nombreReponse}}</ion-note> -->
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+    <ion-card [hidden]="isLocaliteFollower"><ion-item><ion-label> Pas de localites followers </ion-label></ion-item></ion-card>
+  </div>
 
-  <ion-card [hidden]="!isAgencesFollower">
-    <ion-card-header>
-      <ion-item>
-        <ion-label> Agences followers </ion-label>
-      </ion-item>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-list>
-        <ion-item class="lab" *ngFor="let af of agencesFollower">
-          <ion-label>{{af?.localite}}</ion-label>
-          <ion-note slot="end" color="primary">{{af?.nombreReception}} - {{af?.nombreReponse}}</ion-note>
+  <div [hidden]="!isAgencesView">
+    <ion-card [hidden]="!isAgencesFollower">
+      <ion-card-header>
+        <ion-item>
+          <ion-label> Agences followers </ion-label>
         </ion-item>
-      </ion-list>
-    </ion-card-content>
-  </ion-card>
-  <ion-card [hidden]="isAgencesFollower"><ion-item><ion-label> Pas d'agences followers </ion-label></ion-item></ion-card>
-
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item class="lab" *ngFor="let af of agencesFollower">
+            <ion-label>{{af?.localite}}</ion-label>
+            <!-- <ion-note slot="end" color="primary">{{af?.nombreReception}} - {{af?.nombreReponse}}</ion-note> -->
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+    <ion-card [hidden]="isAgencesFollower"><ion-item><ion-label> Pas d'agences followers </ion-label></ion-item></ion-card>
+  </div>
 
   <ion-card class="message" color="light">
     <ion-card-header>
@@ -121,8 +157,7 @@
                   <ion-img src="{{urlaudio}}" alt="{{pc.type}}"></ion-img>                                
                 </div>        
                 <div *ngSwitchCase = "'Vidéo'">
-                  <ion-img src="{{urlvideo}}" alt="{{pc.type}}"></ion-img>                  
-                  <!-- <iframe width="100%" height="100%" [src]="urlSafe" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->
+                  <ion-img src="{{urlvideo}}" alt="{{pc.type}}"></ion-img>
                 </div>        
                 <div *ngSwitchCase = "'Photo'">
                   <ion-img src="{{base+pc.piece}}" alt="{{pc.type}}"></ion-img>
@@ -153,28 +188,41 @@
 </ion-content>
 
 <!-- add piece operations -->
-<ion-card [hidden]="isOther" class="areaClass">   
-  <ion-card-content>
-    <ion-textarea [(ngModel)]="textMessage" rows="1" placeholder="plus d'infos"></ion-textarea>
-  </ion-card-content>
-  <ion-item>
-    <ion-fab horizontal="start" vertical="center" slot="">  
-      <ion-fab-button (click)="presentActionSheet()" color="primary">
-        <ion-icon name="add"></ion-icon> <ion-icon name="attach-outline"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
-    <ion-fab horizontal="center" vertical="center" slot="">  
-      <ion-fab-button (click)="presentCiblesSheet()" color="primary">
-        <ion-icon name="add"></ion-icon> <ion-icon name="person-add-outline"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
-    <ion-fab horizontal="end" vertical="center" slot="">  
-      <ion-fab-button [disabled]="!textMessage" (click)="addTexte()" color="primary">
-        <ion-icon name="send-outline"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
-  </ion-item>  
-</ion-card>
+<div [hidden]="isOther">
+  <ion-card [hidden]="!wantAdd" class="areaClass" style="padding-top: 0px; width: 88%; position: fixed; bottom: 0px;">   
+    <ion-card-content>
+      <ion-textarea [(ngModel)]="textMessage" rows="1" placeholder="plus d'infos"></ion-textarea>
+    </ion-card-content>
+    <ion-item>
+      <ion-fab horizontal="start" vertical="center" slot="">  
+        <ion-fab-button (click)="presentActionSheet()" color="primary">
+          <ion-icon name="add"></ion-icon> <ion-icon name="attach-outline"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+      <ion-fab horizontal="center" vertical="center" slot="">  
+        <ion-fab-button (click)="presentCiblesSheet()" color="primary">
+          <ion-icon name="add"></ion-icon> <ion-icon name="person-add-outline"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+      <ion-fab horizontal="end" vertical="center" slot="">  
+        <ion-fab-button [disabled]="!textMessage" (click)="addTexte()" color="primary">
+          <ion-icon name="send-outline"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </ion-item>  
+  </ion-card>
+</div>
+
+<!-- Bouton ajout piece -->
+<div [hidden]="isOther">
+  <ion-fab horizontal="end" vertical="bottom" slot="fixed">
+    <ion-fab-button (click)="addPieceArea()" color="primary" style="margin: 13px; margin-right: 0px; width: 40px; height: 40px; line-height: 40px;">
+      <ion-icon [hidden]="wantAdd" name="add"></ion-icon>
+      <ion-icon [hidden]="!wantAdd" name="remove-circle"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</div>
+<!--  -->
 
 
 

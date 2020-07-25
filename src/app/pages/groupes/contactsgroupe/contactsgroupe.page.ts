@@ -2,36 +2,33 @@ import { Component, OnInit } from '@angular/core';
 import { AlerteService } from 'src/app/services/alerte.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ToastService } from 'src/app/services/toast.service';
-import { Alerte, Suivi_Alerte_Perso } from 'src/app/types';
+import { Groupe, Membre, Suivi_Alerte_Perso } from 'src/app/types';
 import { Contacts, Contact, ContactField, ContactName } from '@ionic-native/contacts/ngx';
 import { CallNumber } from '@ionic-native/call-number/ngx';
 import { SMS } from '@ionic-native/sms/ngx';
-import { AuthService } from 'src/app/services/auth.service';
-import { PushservicesService } from 'src/app/services/pushservices.service';
 
 @Component({
-  selector: 'app-contactsalerte',
-  templateUrl: './contactsalerte.page.html',
-  styleUrls: ['./contactsalerte.page.scss'],
+  selector: 'app-contactsgroupe',
+  templateUrl: './contactsgroupe.page.html',
+  styleUrls: ['./contactsgroupe.page.scss'],
 })
-export class ContactsalertePage implements OnInit {
+export class ContactsgroupePage implements OnInit {
 
-  alerteDetalis : Alerte;  MesContacts: Contact[] = []; listContacts: Contact[] = []; selectedContact: any[] = [];
-  suiviAlertePerso: Suivi_Alerte_Perso = {alerte: null, follower: null, reception: "Faux",
-  reponse: "Faux", DateReception: null, DateReponse: null};  pesonnesFollower: Suivi_Alerte_Perso[];
-  
+  groupeDetalis : Groupe;  MesContacts: Contact[] = []; listContacts: Contact[] = []; selectedContact: any[] = [];
+  newMembre = {user_member: "0", groupe: "0", isAdmin: "Faux", isFondateur: "Faux"};
+  pesonnesFollower: Suivi_Alerte_Perso[];
+
   constructor(public alerteService : AlerteService, private router: Router, private activatedRoute: ActivatedRoute,
     private toastService : ToastService, private contacts: Contacts, private callNumber: CallNumber,
-    private sms: SMS, private authService: AuthService, private PushService: PushservicesService,
+    private sms: SMS, 
   ) { }
 
   ngOnInit() { this.loadInfos(); }
 
   async loadInfos(){
-    
-    const ALERTEID = this.activatedRoute.snapshot.params["id"];      
-    this.alerteService.getAlerte(ALERTEID).subscribe(res1=>{
-      this.alerteDetalis=res1; 
+    const GROUPEID = this.activatedRoute.snapshot.params["id"];      
+    this.alerteService.getGroupe(GROUPEID).subscribe(res1=>{
+      this.groupeDetalis=res1;
     },er=>{console.log(er);});
     let options = { filter: '', multiple: true, hasPhoneNumber: true };
     this.contacts.find(['*'], options)?.then( (contacts:Contact[]) =>{
@@ -51,28 +48,26 @@ export class ContactsalertePage implements OnInit {
      er => {console.log("Error getting contacts ", JSON.stringify(er));  } 
     );
   }
-  
-  ajouterCible(cibles, selectedAlerte){
-    this.alerteService.getAlerteFollower(selectedAlerte.id).subscribe(res8=>{ 
-      this.pesonnesFollower = res8;    let notLinkedUser = 0;
-      for (let i = 0; i < cibles.length; i++) { 
+
+   
+  ajouterCible(cibles, selectedgroupe){ 
+    this.alerteService.getGroupeMembresUsers(selectedgroupe.id).subscribe(res8=>{
+      this.pesonnesFollower = res8;    let notLinkedUser = 0; 
+      for (let i = 0; i < cibles.length; i++) {
         notLinkedUser = 0; 
-        for(let f of this.pesonnesFollower){if(cibles[i].realID==f.follower){notLinkedUser += 1;}}
-        if(cibles[i].slt == "Vrai" && notLinkedUser == 0){         
+        for(let f of this.pesonnesFollower){if(cibles[i].realID==f.follower){notLinkedUser += 1;}} 
+        if(cibles[i].slt == "Vrai" && notLinkedUser == 0){ 
           this.alerteService.findByPhone(cibles[i].num).subscribe(target=>{
-            this.suiviAlertePerso.alerte = selectedAlerte.id; this.suiviAlertePerso.follower = target.id; 
-            this.alerteService.ajouterPersonTarget(this.suiviAlertePerso).subscribe(res=>{
-              this.authService.getCurrenttUser(res.follower).subscribe((cu:any) => {
-                this.PushService.lancerNotification(selectedAlerte.id, cu.idNotification );
-              })
-              console.log("cible personne bien ajouté", JSON.stringify(res)); 
-            },er=>{console.log("Erreur ajout de cible personne: ",JSON.stringify(er));});
+            this.newMembre.groupe = selectedgroupe.id; this.newMembre.user_member = target.id; 
+            this.alerteService.addNewMembre(this.newMembre).subscribe(res=>{
+              console.log("cible personne bien ajouté", JSON.stringify(res));               
+            },er=>{console.log("Error add membre: ",JSON.stringify(er));});
           },er=>{console.log("Erreur test: ",JSON.stringify(er));});
         } else{ console.log("membre is follower"); }
         notLinkedUser = 0; 
       }
     },er=>{console.log(er);})
-    this.router.navigate(['/folder/alertes/options/coursalerte/mycoursdetails',selectedAlerte.id]); 
+    this.router.navigate(['/folder/groupes/groupedetails/',selectedgroupe.id]);
   }
 
   loadSelected(selectedElem){
@@ -96,6 +91,18 @@ export class ContactsalertePage implements OnInit {
     ,er => { console.log("Erreur d'enregistrement du contact", JSON.stringify(er));}
     );
   }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

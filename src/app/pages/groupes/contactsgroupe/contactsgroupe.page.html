@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Liste des contacts</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+   <ion-list>
+    <ion-list-header>Nouveaux membre du groupe: <br> {{groupeDetalis?.nom}} </ion-list-header>
+    <ion-item-sliding *ngFor="let c of listContacts; let i = index">
+      <ion-item (click)="loadSelected(selectedContact[i])">
+        <ion-label>  <b> {{ c.displayName }} </b> <p> {{ c.phoneNumbers[0].value }} <br> {{selectedContact[i].slt}} </p> </ion-label>
+        <ion-checkbox color="primary"  slot="start" ></ion-checkbox>
+      </ion-item>      
+      
+      <ion-item-options>
+        <ion-item-option (click)="call(c)" color="primary">
+          <ion-icon name="call" slot="icon-only"></ion-icon>
+        </ion-item-option>
+        <ion-item-option (click)="sendSms(c,'send message test')" color="primary">
+          <ion-icon name="mail" slot="icon-only"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>  
+  </ion-list> 
+  
+
+  <ion-fab horizontal="end" vertical="bottom" slot="fixed">
+    <ion-fab-button color="light" (click)="ajouterCible(selectedContact, groupeDetalis)">
+      Ajouter 
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

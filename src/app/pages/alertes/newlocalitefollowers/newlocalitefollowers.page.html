@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Liste des Localites</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+   <ion-list>
+    <ion-list-header>Nouveaux cibles pour l'alerte N*{{alerteDetalis?.id}} lancée depuis {{alerteDetalis?.dateAlerte | date}} à {{alerteDetalis?.dateAlerte | date:'H:mm:ss' }} </ion-list-header>
+    <ion-item-sliding *ngFor="let l of allLocalites; let i = index">
+      <ion-item (click)="loadSelected(selectedLocalite[i])">
+        <ion-label><b> {{ l?.region }} </b> <p> {{ l?.adresse}} <br> {{selectedLocalite[i].slt}} </p> </ion-label>
+        <ion-checkbox color="primary"  slot="start" ></ion-checkbox>
+      </ion-item> 
+    </ion-item-sliding> 
+  </ion-list> 
+  
+
+  <ion-fab horizontal="end" vertical="bottom" slot="fixed">
+    <ion-fab-button color="light" (click)="ajouterCible(selectedLocalite, alerteDetalis)">
+      Ajouter 
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

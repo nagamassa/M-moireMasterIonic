@@ -4,6 +4,8 @@ import { AuthConstants } from '../../config/auth-constants';
 import { AuthService } from './../../services/auth.service';
 import { StorageService } from './../../services/storage.service';
 import { ToastService } from 'src/app/services/toast.service';
+import { Capacitor } from '@capacitor/core';
+import { PushservicesService } from 'src/app/services/pushservices.service';
 
 @Component({
   selector: 'app-login',
@@ -28,26 +30,33 @@ export class LoginPage implements OnInit {
     private router: Router,
     private authService: AuthService,
     private storageService: StorageService,
-    private toastService : ToastService
+    private toastService : ToastService,
+    private PushService: PushservicesService,
     ) {}
 
-  ngOnInit() {}
+  ngOnInit() {  }
   
   
     
-    loginAction() {
+    loginAction() {      
       this.storageService.clear();
+      this.PushService.initPush();
       this.authService.login(this.postData).subscribe(
-        (res: any) => {
+        (res: any) => {          
           if (res.auth_token) {
             // Storing the token.
             this.storageService.store(AuthConstants.AUTH, res.auth_token);                   
             // storing the logged user
             this.authService.getUserData(res.auth_token).subscribe(
               (us: any) => {
+                if (Capacitor.platform !== 'web') {
+                  this.storageService.get(AuthConstants.AUTHDEVICE).then(device => {
+                    this.authService.change_notification(us.id, device).subscribe(res2=>{console.log("success not", JSON.stringify(res2));},er=>{console.log("error not", JSON.stringify(er));});      
+                  },er=>{console.log("erDevice: ", JSON.stringify(er));});
+                }
                 // stockage de current user
                 this.authService.getCurrenttUser(us.id).subscribe((cu:any) => {
-                  this.storageService.store(AuthConstants.AUTHDATA, cu);
+                  this.storageService.store(AuthConstants.AUTHDATA, cu);                                    
                 })
               },
               (error: any) => {

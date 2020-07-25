@@ -78,9 +78,7 @@ ion-card-content p {
     line-height: 30px;
 }
 
-ion-content ion-list{
-    padding-bottom:35%;
-}
+
 
 .message pre{
     text-align: left; 
@@ -89,4 +87,16 @@ ion-content ion-list{
  white-space: -pre-wrap;      /* Opera 4-6 */
  white-space: -o-pre-wrap;    /* Opera 7 */
  word-wrap: break-word; 
+}
+
+ion-toolbar{
+
+}
+
+ion-toolbar ion-segment{
+
+}
+
+ion-toolbar ion-segment ion-segment-button{
+        
 }

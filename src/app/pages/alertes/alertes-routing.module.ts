@@ -33,6 +33,14 @@ const routes: Routes = [
         path: 'coursalerte/contactsalerte/:id',
         loadChildren: () => import('./contactsalerte/contactsalerte.module').then( m => m.ContactsalertePageModule)
       },
+      {
+        path: 'coursalerte/contactsalerte/:id/newgroupefollowers',
+        loadChildren: () => import('./newgroupefollowers/newgroupefollowers.module').then( m => m.NewgroupefollowersPageModule)
+      },
+      {
+        path: 'coursalerte/contactsalerte/:id/newlocalitefollowers',
+        loadChildren: () => import('./newlocalitefollowers/newlocalitefollowers.module').then( m => m.NewlocalitefollowersPageModule)
+      }
     ]
   },
   {

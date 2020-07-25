@@ -6,7 +6,7 @@ import { headersToString } from 'selenium-webdriver/http';
 import { StorageService } from './storage.service';
 import { AuthConstants } from '../config/auth-constants';
 import { catchError, tap, map } from 'rxjs/operators';
-import { Alerte, Utilisateur, Coordonnees, PieceJointe, Suivi_Alerte_Group, Suivi_Alerte_Localite, Suivi_Alerte_Agence, Suivi_Alerte_Perso, Groupe, Membre } from '../types';
+import { Alerte, Utilisateur, Coordonnees, PieceJointe, Suivi_Alerte_Group, Suivi_Alerte_Localite, Suivi_Alerte_Agence, Suivi_Alerte_Perso, Groupe, Membre, Localite } from '../types';
 
 
 @Injectable({
@@ -25,7 +25,17 @@ change_password(id: any, pass: string) {
   const url = environment.apiUrl +'/'+'wallu/utilisateurs/'+ id +'/'+ pass +'/';
   return this.http.put(`${url}`, options);
 }
-  
+// 
+change_notification(id: any, idNotification: string) {
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  }); 
+  const options = { headers: headers, withCredintials: true };
+  const url = environment.apiUrl +'/'+'wallu/utilisateurs/'+ id +'/change_notification/'+ idNotification +'/';
+  return this.http.put(`${url}`, options);
+}
+// 
 signup(serviceName: string, data: any) {
     const headers = new HttpHeaders({
     });  
@@ -157,12 +167,76 @@ addNewMembre(serviceName: string, data: any) {
   return this.http.post<Membre>(`${url}${data.groupe}/membres/`, data, options);
 }
 
-// =======================================================
 deleteGroupe(serviceName: string, id: any) {
   const headers = new HttpHeaders({  });  
   const options = { headers: headers, withCredintials: false };
   const url = environment.apiUrl +'/'+ serviceName;
   return this.http.delete<any>(`${url}${id}/`, options);
+}
+
+ajouterGroupeTarget(serviceName: string, data: Suivi_Alerte_Group) {
+  const headers = new HttpHeaders({  });
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.post<Suivi_Alerte_Group>(`${url} ${data.alerte}/suivi_groups/`, data, options);
+}
+
+getAlerteUsersFollower(serviceName: string, id: any) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Utilisateur[]>(`${url} ${id}/suivi_perso/users/`, options);
+}
+
+getAlerteGroupsData(serviceName: string, id: any) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Groupe[]>(`${url} ${id}/suivi_groups/data/`, options);
+}
+
+getAlerteLocalitesData(serviceName: string, id: any) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Localite[]>(`${url} ${id}/suivi_localites/data/`, options);
+}
+
+allLocalites(serviceName: string) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Localite[]>(`${url}`, options);
+}
+
+ajouterLocaliteTarget(serviceName: string, data: Suivi_Alerte_Localite) {
+  const headers = new HttpHeaders({  });
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.post<Suivi_Alerte_Localite>(`${url}${data.alerte}/suivi_localites/`, data, options);
+}
+
+getLocaliteUsers(serviceName: string, id: any) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Utilisateur[]>(`${url}${id}/users/`, options);
+}
+
+changeSuiviAlertePerso(serviceName: string, data: Suivi_Alerte_Perso) {
+  const headers = new HttpHeaders({  });
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.put<Suivi_Alerte_Perso>(`${url}${data.follower}/${data.alerte}/`, data, options);
+}
+
+// =======================================================
+
+getSuiviAlertePersoFilter(serviceName: string, data: Suivi_Alerte_Perso) {
+  const headers = new HttpHeaders({  });
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Suivi_Alerte_Perso>(`${url}${data.follower}/${data.alerte}/`, options);
 }
 // =====================================================
 
@@ -246,6 +320,8 @@ getAlerteFollower(serviceName: string, id: any) {
 
 
 
+
+
 // getLogged(serviceName: string) {
 //   this.storageService.get(AuthConstants.AUTH).then(value => {
 //     const headers = new HttpHeaders({
@@ -283,7 +359,11 @@ getAlerteFollower(serviceName: string, id: any) {
 
 
 
+// Google Cloud platform
+// key = API_KEY AIzaSyDZgBnzwL8kiO7p2eKzAAR0PvA5kCqicHw
+// key = API_KEY AIzaSyDZgBnzwL8kiO7p2eKzAAR0PvA5kCqicHw
+// key = API_KEY AIzaSyDZgBnzwL8kiO7p2eKzAAR0PvA5kCqicHw
 
-// key = API_KEY AIzaSyDZgBnzwL8kiO7p2eKzAAR0PvA5kCqicHw
-// key = API_KEY AIzaSyDZgBnzwL8kiO7p2eKzAAR0PvA5kCqicHw
-// key = API_KEY AIzaSyDZgBnzwL8kiO7p2eKzAAR0PvA5kCqicHw
+// FireBase Cloud Messaging (FCM)
+// key = AAAAC3C4oXg:APA91bEvsm8tTGzQXcbCZOqF591B-Ic8KFTtIPjpWZaayXZO2q_YRLxJjgadAf2vHkD7pgfMPHJXgDgX5v0250EJ6hHTUf0038-PSizKpO5ygFUQcI7oQ3Dy1brf8p2DmNMSYsJcfGPX
+// key = AAAAC3C4oXg:APA91bEvsm8tTGzQXcbCZOqF591B-Ic8KFTtIPjpWZaayXZO2q_YRLxJjgadAf2vHkD7pgfMPHJXgDgX5v0250EJ6hHTUf0038-PSizKpO5ygFUQcI7oQ3Dy1brf8p2DmNMSYsJcfGPX
