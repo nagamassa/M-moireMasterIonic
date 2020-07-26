@@ -1,11 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 import { environment } from 'src/environments/environment';
 import { AlerteService } from 'src/app/services/alerte.service';
 import { AuthConstants } from 'src/app/config/auth-constants';
 import { StorageService } from 'src/app/services/storage.service';
 import { Alerte, Utilisateur, Coordonnees, PieceJointe, Suivi_Alerte_Group, Suivi_Alerte_Localite, Suivi_Alerte_Agence, Suivi_Alerte_Perso, Groupe, Localite } from 'src/app/types';
-import { Observable } from 'rxjs';
 import {Camera, CameraOptions} from '@ionic-native/Camera/ngx';
 import { MediaCapture, MediaFile, CaptureError, CaptureImageOptions } from '@ionic-native/media-capture/ngx';
 import { Media, MediaObject } from '@ionic-native/media/ngx';
@@ -14,7 +13,7 @@ import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
 import { File, FileEntry } from '@ionic-native/File/ngx';
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer/ngx';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ModalController, ActionSheetController, Platform } from '@ionic/angular';
+import { ModalController, ActionSheetController, Platform, NavController } from '@ionic/angular';
 import { PiecesService } from 'src/app/services/pieces.service';
 import { PiecepopupPage } from 'src/app/piecepopup/piecepopup.page';
 import { FilePath } from '@ionic-native/file-path/ngx';
@@ -26,8 +25,16 @@ import { Contacts, Contact, ContactField, ContactName } from '@ionic-native/cont
 import { CallNumber } from '@ionic-native/call-number/ngx';
 import { SMS } from '@ionic-native/sms/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
-
 import { Plugins, Capacitor } from '@capacitor/core';
+// ====================================================================================
+import { filter } from 'rxjs/operators';
+import { Storage } from '@ionic/storage';
+import { Observable, Subscription } from 'rxjs';
+
+declare var google;
+// ====================================================================================
+
+
 const { PushNotifications } = Plugins;
 
 
@@ -37,7 +44,20 @@ const { PushNotifications } = Plugins;
   styleUrls: ['./mycoursdetails.page.scss'],
 })
 export class MycoursdetailsPage implements OnInit {
-  map:any;  marker:any; latitude:any=""; longitude:any="";  timestamp:any=""; deviceToken: string = "";
+// ======================================================================================
+@ViewChild('map') mapElement: ElementRef;
+  map: any;
+  currentMapTrack = null;
+ 
+  isTracking = false;
+  trackedRoute = [];
+  previousTracks = [];
+ 
+  positionSubscription: Subscription;
+// ======================================================================================
+
+
+  marker:any; latitude:any=""; longitude:any="";  timestamp:any=""; deviceToken: string = "";
 
   base:string = environment.apiUrl; base64Image:any; 
   newPiece = {id: null,article: null,alerte: null,proprio: '',type: '',titre: '',piece: null, texto: '',datePiece: null}
@@ -67,6 +87,9 @@ export class MycoursdetailsPage implements OnInit {
     public sanitizer: DomSanitizer, private videoPlayer: VideoPlayer, private toastService : ToastService,
     public fileChooser:FileChooser, private contacts: Contacts, private callNumber: CallNumber,
     private sms: SMS, public platform: Platform, public geolocation: Geolocation,
+// ========================================================================================================
+    public navCtrl: NavController, private plt: Platform, private storage: Storage
+// ========================================================================================================
     ){ }
 
 
@@ -86,7 +109,7 @@ async piecemodal(pc:PieceJointe){
   } 
 }
 
-ngOnInit() { this.loadData(); }
+ngOnInit() { this.loadData(); this.ionViewDidLoad(); }
 
 resetBadgeCount() {
   PushNotifications.removeAllDeliveredNotifications();
@@ -100,7 +123,7 @@ async loadData(){
       this.auteur = res2; this.auteur.photo = environment.apiUrl + this.auteur.photo; this.isAuteur = true;
       if(this.auteur){this.isAuteur = true;}
       this.alerteService.getAlerteCoordonnees(ALERTEID).subscribe(res3=>{
-        this.coordonnees = res3; this.isCoordonnees = true;
+        this.coordonnees = res3; this.isCoordonnees = true; 
         this.coords = {'latitude': this.coordonnees[this.coordonnees.length-1]?.latitude, 'longitude': this.coordonnees[this.coordonnees.length-1]?.longitude}
         let i=0; for(let elem of this.coordonnees){ i++;} if(i){this.isCoordonnees = true;}
         this.alerteService.getAlertePieces(ALERTEID).subscribe(res4=>{
@@ -368,94 +391,92 @@ addPieceArea(){
 }
 
 
+// =========================================================================================================
+ionViewDidLoad() {
+  const ALERTEID = this.activatedRoute.snapshot.params["id"];
+  this.alerteService.getAlerteCoordonnees(ALERTEID).subscribe(res3=>{
+    let coords = res3[res3.length-1];
+  
 
+    this.plt.ready().then(() => {
+      // this.loadHistoricRoutes();
+
+      let mapOptions = {
+        zoom: 13,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        mapTypeControl: true,
+        streetViewControl: true,
+        fullscreenControl: true
+      }
+      this.map = new google.maps.Map(this.mapElement.nativeElement, mapOptions);
+      let latLng = new google.maps.LatLng(coords?.latitude, coords?.longitude);
+      this.map.setCenter(latLng);
+      this.map.setZoom(12);
+
+      let marker1 = new google.maps.Marker({ map : this.map, position: latLng})
+
+    });
+  },er=>{console.log(er);});
+}
+
+loadHistoricRoutes() {
+  this.storage.get('routes').then(data => {
+    if (data) {
+      this.previousTracks = data;
+    }
+  });
+}
+
+startTracking() {
+  this.isTracking = true;
+  this.trackedRoute = [];
+
+  this.positionSubscription = this.geolocation.watchPosition()
+    .pipe(
+      filter((p) => p.coords !== undefined) //Filter Out Errors
+    )
+    .subscribe(data => {
+      setTimeout(() => {
+        this.trackedRoute.push({ lat: data.coords.latitude, lng: data.coords.longitude });
+        this.redrawPath(this.trackedRoute);
+      }, 0);
+    });
+
+}
+
+redrawPath(path) {
+  if (this.currentMapTrack) {
+    this.currentMapTrack.setMap(null);
+  }
+
+  if (path.length > 1) {
+    this.currentMapTrack = new google.maps.Polyline({
+      path: path,
+      geodesic: true,
+      strokeColor: '#ff00ff',
+      strokeOpacity: 1.0,
+      strokeWeight: 3
+    });
+    this.currentMapTrack.setMap(this.map);
+  }
+}
+
+stopTracking() {
+  let newRoute = { finished: new Date().getTime(), path: this.trackedRoute };
+  this.previousTracks.push(newRoute);
+  this.storage.set('routes', this.previousTracks);
+ 
+  this.isTracking = false;
+  this.positionSubscription.unsubscribe();
+  this.currentMapTrack.setMap(null);
+}
+ 
+showHistoryRoute(route) {
+  this.redrawPath(route);
+}
+// =========================================================================================================
 
 
 
 
 }
-
-
-
-
-// selectFile(){
-//   let file
-//       this.fileChooser.open().then((uri) => {
-//        this.filePath.resolveNativePath(uri).then((fileentry) => {
-//          let filename = this.eventsdata.getfilename(fileentry);
-//          let fileext = this.eventsdata.getfileext(fileentry);
-        
-//          if(fileext == "pdf"){
-//             this.eventsdata.makeFileIntoBlob(fileentry, fileext,"application/pdf").then((fileblob) => {
-//               file={
-//                  blob : fileblob,
-//                 type: "application/pdf",
-//                 fileext: fileext,
-//                 filename: filename
-//               }
-//               this.eventsdata.addAssignmentFile(this.sbaid.sbaid, file)
-//         })
-//          }
-//            if(fileext == "docx"){
-//             this.eventsdata.makeFileIntoBlob(fileentry, fileext,"application/vnd.openxmlformats-officedocument.wordprocessingml.document").then((fileblob) => {
-//          file={
-//                  blob : fileblob,
-//                 type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-//                 fileext: fileext,
-//                 filename: filename
-//               }
-//               this.eventsdata.addAssignmentFile(this.sbaid.sbaid, file)
-//         })
-//          } 
-//            if(fileext == "doc"){
-//             this.eventsdata.makeFileIntoBlob(fileentry, fileext,"application/msword").then((fileblob) => {
-//               file={
-//                  blob : fileblob,
-//                 type: "application/msword",
-//                 fileext: fileext,
-//                 filename: filename
-//               }
-//               this.eventsdata.addAssignmentFile(this.sbaid.sbaid, file)
-//           })
-//          }
-//          if(fileext == "epub"){
-//             this.eventsdata.makeFileIntoBlob(fileentry, fileext,"application/octet-stream").then((fileblob) => {
-//            file={
-//                  blob : fileblob,
-//                 type: "application/octet-stream",
-//                 fileext: fileext,
-//                 filename: filename
-//               }
-//               this.eventsdata.addAssignmentFile(this.sbaid.sbaid, file)
-//           })
-//          }
-//             if(fileext == "accdb"){
-//             this.eventsdata.makeFileIntoBlob(fileentry, filename,"application/msaccess").then((fileblob) => {
-//            file={
-//                  blob : fileblob,
-//                 type: "application/msaccess",
-//                 fileext: fileext,
-//                 filename: filename
-//               }
-//               this.eventsdata.addAssignmentFile(this.sbaid.sbaid, file)
-//           })
-//          }
-//            if(fileext == "xlsx"){
-//             this.eventsdata.makeFileIntoBlob(fileentry, filename,"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet").then((fileblob) => {
-//            file={
-//                  blob : fileblob,
-//                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-//                 fileext: fileext,
-//                 filename: filename
-//               }
-//               this.eventsdata.addAssignmentFile(this.sbaid.sbaid, file)
-//           })
-//          }
-  
-//          else if (fileext!="doc"||"epub"||"xlsx"||"pdf"||"accdb"||"docx" ){
-//            alert("Can't add "+  filename)
-//          }
-        
-//         })
-//       })
-//   }

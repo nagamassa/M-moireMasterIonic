@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions} from '@ionic-native/native-geocoder/ngx';
-
+import { Storage } from '@ionic/storage';
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
@@ -81,6 +81,7 @@ export class AppComponent implements OnInit {
     public toastService : ToastService, public storageService : StorageService,
     public alerteService : AlerteService, private geolocation: Geolocation, 
     private nativeGeocoder: NativeGeocoder, private PushService: PushservicesService,
+    private storage: Storage
   ) {
     this.initializeApp();
   }
@@ -96,7 +97,7 @@ export class AppComponent implements OnInit {
   }
 
   url= '';
-  ngOnInit() {
+  ngOnInit() { 
     this.authService.userData$.subscribe(res => {
       this.url = environment.apiUrl + res.photo;
     });
@@ -125,25 +126,20 @@ export class AppComponent implements OnInit {
         this.alerteService.ajouterPersonTarget(this.suiviAlertePerso).subscribe(res=>{
           console.log("cible personne bien ajouté", JSON.stringify(res));
         },er=>{console.log("Erreur ajout de cible personne: ",JSON.stringify(er));});
-        // 
         this.coordonnees.alerte = res2.id;
-        this.geolocation.getCurrentPosition().then((resp) => {
-          this.coordonnees.latitude = resp.coords.latitude;
-          this.coordonnees.longitude = resp.coords.longitude;
-          this.getAddress(this.coordonnees.latitude, this.coordonnees.longitude);
+        // 
+        this.geolocation.getCurrentPosition().then(pos => {
+          this.coordonnees.latitude = pos.coords.latitude; this.coordonnees.longitude = pos.coords.longitude;
           this.alerteService.loadCoordonnees(this.coordonnees).subscribe(res =>{
-            console.log('coordonnes loaded avec success');            
+            console.log('coordonnes loaded avec success', pos.coords.latitude," ", pos.coords.longitude );            
           },err=>{
             console.log(err);            
-          })     
-         }).catch((error) => {
-           console.log('Error getting location', error);
-         });         
-         let watch = this.geolocation.watchPosition();
-         watch.subscribe((data) => {
-         }); 
+          })
+        }).catch((error) => {
+          console.log('Error getting location', error);
+        });
+        //     
          this.router.navigate(['/folder/alertes/options/coursalerte/mycoursdetails',res2.id]);
-         // 
       }, err =>{
         console.log(JSON.stringify(err));        
       });
@@ -152,39 +148,7 @@ export class AppComponent implements OnInit {
     });
   }
 
-  // geocoder options
-  nativeGeocoderOptions: NativeGeocoderOptions = {
-    useLocale: true,
-    maxResults: 5
-  };
-
-  // get address using coordinates
-  getAddress(lat,long){
-    this.nativeGeocoder.reverseGeocode(lat, long, this.nativeGeocoderOptions)
-    .then((res: NativeGeocoderResult[]) => {
-      this.address = this.pretifyAddress(res[0]);
-      alert('Adresse: '+ this.address);
-    })
-    .catch((error: any) => {
-      alert('Error getting address'+ JSON.stringify(error));
-    });
-  }
-
-  // address
-  pretifyAddress(addresse){
-    let obj = [];
-    let data = "";
-    for (let key in addresse) {
-      obj.push(addresse[key]);
-    }
-    obj.reverse();
-    for (let val in obj) {
-      if(obj[val].length)
-      data += obj[val]+', ';
-    }
-    return addresse.slice(0, -2);
-  }
-
+  
 
   
 

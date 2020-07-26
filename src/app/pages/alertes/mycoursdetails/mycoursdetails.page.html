@@ -8,20 +8,20 @@
 </ion-header>
 
 <ion-content fullscreen="true">
-  <ion-button (click)="resetBadgeCount()" expand="block"></ion-button>
-  <ion-list>
-  <ion-card [hidden]="!isCoordonnees">
-    <ion-img src="{{url}}"></ion-img>
+  <!-- <ion-button (click)="resetBadgeCount()" expand="block"></ion-button> -->
+<!-- ========================================================================= -->
+  <ion-card>
+    <div #map id="map"></div>
+  
     <ion-card-header>
       <ion-item>
-        <ion-label> Dernières coordonnées </ion-label>
+        <ion-label> Coordonnées (Lat, Long)</ion-label>
       </ion-item><br>
-      <ion-card-subtitle>Latitude: {{coords.latitude}}</ion-card-subtitle>
-      <ion-card-subtitle>Loongitude: {{coords.longitude}}</ion-card-subtitle>
+      <ion-card-subtitle>{{ coords.latitude }}, {{ coords.latitude }}</ion-card-subtitle>
     </ion-card-header>
   </ion-card>
-  <ion-card [hidden]="isCoordonnees"><ion-item><ion-label> Pas d'infos sur la victime' </ion-label></ion-item></ion-card>
-    
+<!-- ========================================================================= -->
+  <ion-list>
   <ion-card [hidden]="!isAuteur">
     <ion-img src="{{auteur?.photo}}"></ion-img>
     <ion-card-header>
