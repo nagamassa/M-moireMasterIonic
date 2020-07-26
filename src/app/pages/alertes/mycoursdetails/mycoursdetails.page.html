@@ -28,7 +28,7 @@
       <ion-item>
         <ion-label> Victime </ion-label>
       </ion-item><br>
-      <ion-card-subtitle>{{auteur?.first_name}} {{auteur?.last_name}} alias {{auteur?.alias}}</ion-card-subtitle>
+      <ion-card-subtitle>alias {{auteur?.alias}}</ion-card-subtitle>
     </ion-card-header>
     <ion-card-content class="desc">
       <h5>Descriptions:</h5> <p> {{auteur?.description}} </p>
@@ -142,7 +142,7 @@
     <ion-card [hidden]="isAgencesFollower"><ion-item><ion-label> Pas d'agences followers </ion-label></ion-item></ion-card>
   </div>
 
-  <ion-card class="message" color="light">
+  <ion-card class="message">
     <ion-card-header>
       <ion-item>
         <ion-label> Liste des messages </ion-label>
@@ -168,9 +168,8 @@
                   </ion-card-content>
                 </div>
               </div> 
-            <ion-item>
-              <ion-label></ion-label>
-              <ion-note slot="end" color="danger">{{pc.datePiece | date}} à {{pc.datePiece | date:'H:mm:ss' }}</ion-note>
+            <ion-item color="primary">
+            <p>{{pc.datePiece | date}} à {{pc.datePiece | date:'H:mm:ss' }}</p>
             </ion-item>           
           </ion-card>
         </div>

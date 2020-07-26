@@ -10,7 +10,7 @@
 <ion-content fullscreen>
   <ion-list>
     <ion-list-header>
-      Membres du groupes
+      Membres du groupes:
     </ion-list-header>
     <ion-item-sliding *ngFor="let mb of membres; let i = index">        
       <div [ngSwitch]="mb.isAdmin">
@@ -21,7 +21,7 @@
               <ion-item >
                 <ion-avatar slot="start" (click)="openProfile(userMembers[i]?.photo)">  <img [src]="userMembers[i]?.photo">  </ion-avatar>
                 <ion-label color = "danger">
-                  <p>{{userMembers[i]?.first_name}}  {{userMembers[i]?.last_name}} alias {{userMembers[i]?.alias}}</p> <p>crée: {{mb?.dateJoined | date}} à {{mb?.dateJoined | date:'H:mm:ss' }}</p>
+                  <p>alias {{userMembers[i]?.alias}}</p> <p>crée: {{mb?.dateJoined | date}} à {{mb?.dateJoined | date:'H:mm:ss' }}</p>
                 </ion-label>
               </ion-item>         
               <!--  -->
@@ -31,7 +31,7 @@
               <ion-item >
                 <ion-avatar slot="start" (click)="openProfile(userMembers[i]?.photo)">  <img [src]="userMembers[i]?.photo">  </ion-avatar>
                 <ion-label color = "success">
-                  <p>{{userMembers[i]?.first_name}}  {{userMembers[i]?.last_name}} alias {{userMembers[i]?.alias}}</p> <p>crée: {{mb?.dateJoined | date}} à {{mb?.dateJoined | date:'H:mm:ss' }}</p>
+                  <p>alias {{userMembers[i]?.alias}}</p> <p>crée: {{mb?.dateJoined | date}} à {{mb?.dateJoined | date:'H:mm:ss' }}</p>
                 </ion-label>
               </ion-item>
               <ion-item-options [hidden]="isOther">
@@ -47,7 +47,7 @@
           <ion-item >
             <ion-avatar slot="start" (click)="openProfile(userMembers[i]?.photo)">  <img [src]="userMembers[i]?.photo">  </ion-avatar>
             <ion-label>
-              <p>{{userMembers[i]?.first_name}}  {{userMembers[i]?.last_name}} alias {{userMembers[i]?.alias}}</p> <p>crée: {{mb?.dateJoined | date}} à {{mb?.dateJoined | date:'H:mm:ss' }}</p>
+              <p>alias {{userMembers[i]?.alias}}</p> <p>crée: {{mb?.dateJoined | date}} à {{mb?.dateJoined | date:'H:mm:ss' }}</p>
             </ion-label>
           </ion-item>
           <ion-item-options [hidden]="isOther">

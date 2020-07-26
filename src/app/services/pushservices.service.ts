@@ -65,8 +65,8 @@ export class PushservicesService {
 
   // 
   // 
-  lancerNotification(detailsId: number, target: string) {
-    const bodyMessage = "Nouvelle alerte en cours";   const title = "SOS";
+  lancerNotification(detailsId: number, target: string, victime:any) {
+    const bodyMessage = "Victime: "+victime?.alias;   const title = "Nouveaux SOS en cours";
     const Authkey = "AAAAC3C4oXg:APA91bEvsm8tTGzQXcbCZOqF591B-Ic8KFTtIPjpWZaayXZO2q_YRLxJjgadAf2vHkD7pgfMPHJXgDgX5v0250EJ6hHTUf0038-PSizKpO5ygFUQcI7oQ3Dy1brf8p2DmNMSYsJcfGPX";
     const topic = target;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': 'key=' + Authkey });

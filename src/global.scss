@@ -36,6 +36,7 @@
 ion-header ion-toolbar ion-title ion-label {
     font-size: 95%;
 }
+
 //  debut CSS pour les pop de pièces jointes alertes dans la pages des details d'alertes
 .my-modal-css .modal-wrapper{
     height: 30%;
@@ -55,12 +56,10 @@ ion-header ion-toolbar ion-title ion-label {
 //  Fin CSS pour les pop de pièces jointes alertes
 
 //  CSS pour eviter le cacher le scrollbar des pages
-.no-scroll-content {
-    --offset-bottom: auto!important;
-    --overflow: hidden;
-    overflow: auto;
-    &::-webkit-scrollbar {
-      display: none;
-    }
-}
+
+
+
+
+
+
 

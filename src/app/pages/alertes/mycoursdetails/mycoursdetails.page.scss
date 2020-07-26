@@ -1,103 +1,42 @@
 // =========================================================================
-#map {
-    width: 100%;
-    height: 300px;
-  }
+#map { width: 100%; height: 300px; }
 // =========================================================================
 
+ion-card-header ion-item ion-label, ion-card > ion-item > ion-label{ color: red; font-size: 80%; text-align: center!important; }
+
+h5{ color: blue; text-decoration: underline; clear: both; }
+
+ion-card-subtitle{ text-align: center!important; }
 
 
 
-ion-card-header ion-item ion-label, ion-card > ion-item > ion-label{
-    color: red;
-    font-size: 80%;
-    text-align: center!important;
-}
+.desc{ font-size: 100%; }
 
-h5{
-    color: blue;
-    text-decoration: underline;
-    clear: both;
-}
+div ion-card{ width: 95%; margin: auto; }
 
-ion-card-subtitle{
-    text-align: center!important;
-}
+ion-slide ion-img { max-width: 100%; height: 50%; }
 
-.lab ion-label{
-    color: darken($color: #000000, $amount: 0);
-}
+.message ion-card { padding-top: 0px; padding-bottom: 0px; }
 
-.desc{
-    font-size: 100%;
-}
+.message ion-card-title { font-family: Arial, Helvetica, sans-serif; text-align: center; font-size: 80%; }
 
-div ion-card{
-    width: 95%;
-    margin: auto;
-}
+.message pre{text-align: left; white-space: pre-wrap; white-space: -moz-pre-wrap; white-space: -pre-wrap;
+    white-space: -o-pre-wrap; word-wrap: break-word; font-size: 90%; font-family: Arial, Helvetica, sans-serif;
+    margin-top: 0px; margin-bottom: 0px; }
 
-ion-slide ion-img {
-    max-width: 100%;
-    height: 50%;
-}
+.lab p{ text-align: center;  font-size: 70%; font-family: Arial, Helvetica, sans-serif; padding: 0px; margin: 0px; }
 
+.lab ion-card{ margin-bottom: 10px; }
 
-.message ion-card{
-    margin-bottom: 5%;
-}
+ion-card-content p { font-family: Arial, Helvetica, sans-serif; text-align: left; font-size: 90%; }
 
-.message ion-card-title {
-    font-family: Arial, Helvetica, sans-serif;
-    text-align: center;
-    font-size: 80%;
-}
+.areaClass{ padding-top: 0px; width: 88%; position: fixed; bottom: 0px; }
 
-.message ion-card-content {
-    text-align: center;
-    font-size: 80%;  
-}
+.areaClass ion-card-content{ margin: 0px; padding: 0px; }
 
-ion-card-content p {
-    font-family: Arial, Helvetica, sans-serif;
-    text-align: left;
-    font-size: 90%;
-}
+.areaClass ion-button{ margin-top: 0px; margin-bottom: 0px; }
 
-.areaClass{
-    padding-top: 0px;
-    width: 88%;
-    position: fixed;
-    bottom: 0px;
-}
-.areaClass ion-card-content{
-   margin: 0px;
-   padding: 0px;
-}
-
-.areaClass ion-button{
-    margin-top: 0px;
-    margin-bottom: 0px;
- }
-
-.areaClass ion-fab-button{
-    margin: 13px;
-    margin-right: 0px;
-    width: 30px;
-    height: 30px;
-    line-height: 30px;
-}
-
-
-
-.message pre{
-    text-align: left; 
-    white-space: pre-wrap;       /* css-3 */
- white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
- white-space: -pre-wrap;      /* Opera 4-6 */
- white-space: -o-pre-wrap;    /* Opera 7 */
- word-wrap: break-word; 
-}
+.areaClass ion-fab-button{ margin: 13px; margin-right: 0px; width: 30px; height: 30px; line-height: 30px; }
 
 ion-toolbar{
 

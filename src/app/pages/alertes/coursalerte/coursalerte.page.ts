@@ -18,7 +18,7 @@ import 'moment/locale/pt-br';
 })
 export class CoursalertePage implements OnInit {
   
-  public mesAlerte : Alerte[] = []; public mesListEnCours : Alerte[] = []; public autreListEnCours : Alerte[] = [];
+  public mesAlerte : Alerte[] = []; public mesListEnCours : any[] = []; public autreListEnCours : any[] = [];
   suiviAlertePerso: Suivi_Alerte_Perso = {alerte: null, follower: null,
   DateReception: null, DateReponse: null};
 
@@ -30,7 +30,11 @@ export class CoursalertePage implements OnInit {
       this.alerteService.myAlertes(res.id).subscribe(res1=>{
         this.mesAlerte = res1;
         for(let alrt of this.mesAlerte){
-          if(alrt.statut=="Active"){ this.mesListEnCours.push(alrt); }          
+          if(alrt.statut=="Active"){ 
+            this.authService.getCurrenttUser(alrt.auteur).subscribe((cu:any) => {
+              this.mesListEnCours.push({alerte:alrt, user: cu});
+            })
+          }          
         }  
       },er=>{console.log(er); });
 
@@ -38,7 +42,9 @@ export class CoursalertePage implements OnInit {
         this.mesAlerte = res2;        
         for(let alrt of res2){ 
           if(alrt.statut=="Active"){
-            this.autreListEnCours.push(alrt);            
+            this.authService.getCurrenttUser(alrt.auteur).subscribe((cu:any) => {
+              this.autreListEnCours.push({alerte:alrt, user: cu});
+            })            
             this.suiviAlertePerso.alerte = alrt.id; this.suiviAlertePerso.follower = res.id;            
             this.alerteService.getSuiviAlertePersoFilter(this.suiviAlertePerso).subscribe(res3=>{
               // 

@@ -73,7 +73,9 @@ export class NewgroupefollowersPage implements OnInit {
                     // 
                     this.alerteService.ajouterPersonTarget(this.suiviAlertePerso).subscribe(res=>{
                       this.authService.getCurrenttUser(res.follower).subscribe((cu:any) => {
-                        this.PushService.lancerNotification(selectedAlerte.id, cu.idNotification );
+                        this.authService.userData$.subscribe(res0 => {
+                          this.PushService.lancerNotification(selectedAlerte.id, cu.idNotification, res0 );
+                        });
                       })
                       console.log("cible personne bien ajouté", JSON.stringify(res));
                     },er=>{console.log("Erreur ajout de cible personne: ",JSON.stringify(er));});

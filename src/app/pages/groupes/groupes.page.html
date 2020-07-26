@@ -1,4 +1,4 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="false">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
@@ -10,7 +10,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="no-scroll-content">
+<ion-content>
   <ion-list>
     <ion-list-header  color="danger">
       <h5>Mes propres groupes</h5>
@@ -19,7 +19,7 @@
       <ion-item>
         <ion-note slot="start" color="danger">{{elem.nombreMembre}}</ion-note>
         <ion-label> {{elem.nom}} </ion-label>
-        <ion-button (click)="myGroupeDetails(elem)" fill="outline" slot="end"> Détails </ion-button>
+        <ion-button (click)="myGroupeDetails(elem)" fill="outline" slot="end"> Plus </ion-button>
       </ion-item>    
       <ion-card-content>
         Groupe crée depuis {{elem.dateCreation | date}} à {{elem.dateCreation | date:'H:mm:ss' }}
@@ -34,7 +34,7 @@
       <ion-item>
         <ion-note slot="start" color="danger">{{elem.nombreMembre}}</ion-note>
         <ion-label> {{elem.nom}} </ion-label>
-        <ion-button (click)="myGroupeDetails(elem)" fill="outline" slot="end"> Détails </ion-button>
+        <ion-button (click)="myGroupeDetails(elem)" fill="outline" slot="end"> Plus </ion-button>
       </ion-item>    
       <ion-card-content>
         Groupe crée depuis {{elem.dateCreation | date}} à {{elem.dateCreation | date:'H:mm:ss' }}

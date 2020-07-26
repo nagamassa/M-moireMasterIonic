@@ -1,4 +1,4 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="false">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
@@ -10,7 +10,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="no-scroll-content">
+<ion-content>
   <ion-list>
     {{testString}}
     <ion-list-header  color="danger">
@@ -19,27 +19,25 @@
     <ion-card button *ngFor="let elem of (mesListEnCours)">
       <ion-item>
         <ion-icon name="warning" color="danger" slot="start"></ion-icon>
-        <ion-label [hidden]="elem.titre"> Pas de titre </ion-label>
-        <ion-label [hidden]="!elem.titre"> {{elem.titre}} </ion-label>
-        <ion-button (click)="myCoursDetails(elem)" fill="outline" slot="end"> Détails </ion-button>
+        <ion-label> {{elem.user.alias}} </ion-label>
+        <ion-button (click)="myCoursDetails(elem.alerte)" fill="outline" slot="end"> Plus </ion-button>
       </ion-item>    
       <ion-card-content>
-        Alerte {{elem.profil}} en cours depuis {{elem.dateAlerte | date}} à {{elem.dateAlerte | date:'H:mm:ss' }}
+        Alerte {{elem.alerte.profil}} en cours depuis {{elem.alerte.dateAlerte | date}} à {{elem.alerte.dateAlerte | date:'H:mm:ss' }}
       </ion-card-content>
     </ion-card>
     <br>
     <ion-list-header color="danger">
       <h5 class="center">Mes alertes en cours externes</h5>
     </ion-list-header>
-    <ion-card *ngFor="let elem of autreListEnCours">
+    <ion-card button *ngFor="let elem of autreListEnCours">
       <ion-item>
         <ion-icon name="warning" color="danger" slot="start"></ion-icon>
-        <ion-label [hidden]="elem.titre"> Pas de titre </ion-label>
-        <ion-label [hidden]="!elem.titre"> {{elem.titre}} </ion-label>
-        <ion-button (click)="myCoursDetails(elem)" fill="outline" slot="end"> Détails </ion-button>
+        <ion-label> {{elem.user.alias}} </ion-label>
+        <ion-button (click)="myCoursDetails(elem.alerte)" fill="outline" slot="end"> Plus </ion-button>
       </ion-item>    
       <ion-card-content>
-        Alerte {{elem.profil}} en cours depuis {{elem.dateAlerte | date}} à {{elem.dateAlerte | date:'H:mm:ss' }}
+        Alerte {{elem.alerte.profil}} en cours depuis {{elem.alerte.dateAlerte | date}} à {{elem.alerte.dateAlerte | date:'H:mm:ss' }}
       </ion-card-content>
     </ion-card>
   </ion-list>
