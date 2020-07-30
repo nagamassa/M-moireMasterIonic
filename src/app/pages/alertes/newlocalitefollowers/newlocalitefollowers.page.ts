@@ -21,6 +21,7 @@ export class NewlocalitefollowersPage implements OnInit {
   suiviAlertePerso: Suivi_Alerte_Perso = {alerte: null, follower: null, reception: "Faux", reponse: "Faux",
   DateReception: null, DateReponse: null};
   pesonnesFollower: Suivi_Alerte_Perso[]; localiteFollowerData: Localite[]=[];
+  backPage:string = ""; isCoursAlerte:boolean = false;
 
   constructor(public storageService: StorageService,public alerteService : AlerteService, private router: Router, private activatedRoute: ActivatedRoute,
     private toastService : ToastService, private PushService: PushservicesService, private authService: AuthService,
@@ -29,6 +30,11 @@ export class NewlocalitefollowersPage implements OnInit {
   ngOnInit() { this.loadInfos(); }
 
   async loadInfos(){
+    let from = this.activatedRoute.snapshot.params["from"];
+    if(from == "coursalerte"){this.backPage ="/folder/alertes/options/coursalerte"; this.isCoursAlerte = true;}
+    else if(from = "prealerte"){this.backPage ="/folder/alertes/options/prealerte"}
+    else if(from = "histalerte"){this.backPage=="/folder/alertes/options/histalerte"}
+
     const ALERTEID = this.activatedRoute.snapshot.params["id"];      
     this.alerteService.getAlerte(ALERTEID).subscribe(res1=>{
       this.alerteDetalis=res1;
@@ -62,24 +68,26 @@ export class NewlocalitefollowersPage implements OnInit {
                 if(notLinkedUser == 0){
                   this.suiviAlertePerso.alerte = selectedAlerte.id; this.suiviAlertePerso.follower = m.id;
                   this.alerteService.ajouterPersonTarget(this.suiviAlertePerso).subscribe(res=>{
-                    this.authService.getCurrenttUser(res.follower).subscribe((cu:any) => {
-                      this.authService.userData$.subscribe(res0 => {
-                        this.PushService.lancerNotification(selectedAlerte.id, cu.idNotification, res0 );
-                      });
-                    })
+                    if(this.isCoursAlerte){
+                      this.authService.getCurrenttUser(res.follower).subscribe((cu:any) => {
+                        this.authService.userData$.subscribe(res0 => {
+                          this.PushService.lancerNotification(selectedAlerte.id, cu.idNotification, res0 );
+                        });
+                      })
+                    }                    
                     console.log("cible personne bien ajouté", JSON.stringify(res));
                   },er=>{console.log("Erreur ajout de cible personne: ",JSON.stringify(er));});
                 } else{ console.log("membre is follower"); }
                 notLinkedUser = 0;
               }
             },er=>{console.log(er);});
-            this.router.navigate(['/folder/alertes/options/coursalerte/mycoursdetails',selectedAlerte.id]); 
+            alert(this.backPage)
           },er=>{console.log("Erreur ajout de cible localite: ",JSON.stringify(er));});
       } else {console.log(cibles[i].nom," erreur de ciblage");}
         notLinked = 0;
     },er=>{console.log(er);})
     }
-    this.router.navigate(['/folder/alertes/options/coursalerte/mycoursdetails',selectedAlerte.id]); 
+    this.router.navigate(['/folder/alertes/options/coursalerte/mycoursdetails',selectedAlerte.id, {"backPage": this.backPage}]); 
   }
 
 

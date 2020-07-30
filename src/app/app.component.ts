@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions} from '@ionic-native/native-geocoder/ngx';
 import { Storage } from '@ionic/storage';
-import { Platform } from '@ionic/angular';
+import { Platform, ActionSheetController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Router } from '@angular/router';
@@ -13,7 +13,7 @@ import { Network } from '@ionic-native/network/ngx';
 import { ToastService } from './services/toast.service';
 import { AlerteService } from './services/alerte.service';
 import { AuthConstants } from './config/auth-constants';
-import { Coordonnees, Suivi_Alerte_Perso } from './types';
+import { Coordonnees, Suivi_Alerte_Perso, Alerte } from './types';
 import * as moment from "moment";
 import 'moment/locale/pt-br';
 import { PushservicesService } from './services/pushservices.service';
@@ -27,6 +27,7 @@ export class AppComponent implements OnInit {
 
   suiviAlertePerso: Suivi_Alerte_Perso = {alerte: null, follower: null, reception: "Vrai", reponse: "Vrai",
   DateReception: null, DateReponse: null}; 
+  public mesListProg : any[] = [];
   
   disconnected:Boolean=false; address: string;
   coordonnees = {alerte: null,dateCoordonnees: '',longitude: 1.0,latitude: 1.0}
@@ -81,7 +82,7 @@ export class AppComponent implements OnInit {
     public toastService : ToastService, public storageService : StorageService,
     public alerteService : AlerteService, private geolocation: Geolocation, 
     private nativeGeocoder: NativeGeocoder, private PushService: PushservicesService,
-    private storage: Storage
+    private storage: Storage, public actionSheetCtrl: ActionSheetController,
   ) {
     this.initializeApp();
   }
@@ -139,13 +140,66 @@ export class AppComponent implements OnInit {
           console.log('Error getting location', error);
         });
         //     
-         this.router.navigate(['/folder/alertes/options/coursalerte/mycoursdetails',res2.id]);
+         this.router.navigate(['/folder/alertes/options/coursalerte/mycoursdetails',res2.id,  {"backPage": "/folder/alertes/options/coursalerte"}]);
       }, err =>{
         console.log(JSON.stringify(err));        
       });
     }, error => {
       this.toastService.presentToast("Dédolé, veuillez vous connecter dabord!")     
     });
+  }
+
+  async selectProg(buttons: any){
+    const actionSheet =await this.actionSheetCtrl.create({
+      buttons: buttons
+    });
+    actionSheet.present();
+  }
+
+  lancerAlerteProg(alerte: Alerte){
+    alerte.statut = "Active"; alerte.utilisee = "Vrai";
+    moment.locale('fr'); const now = moment().format("YYYY-MM-DDTHH:mm:ss");
+    alerte.dateAlerte = String(now);
+    this.alerteService.changeAlerteInfos(alerte).subscribe(res1=>{
+      this.coordonnees.alerte = alerte.id;
+      this.geolocation.getCurrentPosition().then(pos => {
+        this.coordonnees.latitude = pos.coords.latitude; this.coordonnees.longitude = pos.coords.longitude;
+        this.alerteService.loadCoordonnees(this.coordonnees).subscribe(res =>{
+          console.log('coordonnes loaded avec success', pos.coords.latitude," ", pos.coords.longitude );            
+        },err=>{
+          console.log(err);            
+        })
+      }).catch((error) => {
+        console.log('Error getting location', error);
+      });
+//  =================================================================================
+      this.alerteService.getAlerteFollower(alerte.id).subscribe(res8=>{
+        for(let f of res8){
+          this.authService.getCurrenttUser(f.follower).subscribe((cu:any) => {
+            this.authService.userData$.subscribe(res0 => {
+              this.PushService.lancerNotification(alerte.id, cu.idNotification, res0 );
+            });
+          })
+        } 
+      },er=>{console.log(er);})
+//  =================================================================================
+      this.router.navigate(['/folder/alertes/options/coursalerte/mycoursdetails',alerte.id,  {"backPage": "/folder/alertes/options/coursalerte"}]);
+    },er=>{console.log(er); });
+    
+  }
+
+  presentActionSheet() {    
+    this.storageService.get(AuthConstants.AUTHDATA).then(res =>{
+      this.alerteService.myAlertesProg(res.id).subscribe(res1=>{
+        let buttons:any[]=[];
+        for (let i = 0; i < res1.length; i++) {               
+          this.authService.getCurrenttUser(res1[i].auteur).subscribe((cu:any) => {              
+            buttons.push({ text: res1[i]?.titre, handler: () => { this.lancerAlerteProg(res1[i]); }});
+            if(i == res1.length-1){ this.selectProg(buttons); }
+          }); 
+        }
+      },er=>{console.log(er); });
+    },err => { console.log('erreur getting local data', JSON.stringify(err)); });
   }
 
   

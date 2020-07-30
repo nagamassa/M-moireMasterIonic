@@ -68,6 +68,13 @@ getCurrenttUser(serviceName: string, id: any) {
   return this.http.get<any>(`${url} ${id}/`, options);
 }
 
+programmerAlerte(serviceName: string, data: any, titre: any) {
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});  
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.post(`${url}`, {"auteur": data.id, "utilisee":"Faux", "statut":"Inactive", "type":"Programmée", titre: titre}, options);
+}
+
 lancerAlerteDirect(serviceName: string, data: any) {
   const headers = new HttpHeaders({'Content-Type': 'application/json',});  
   const options = { headers: headers, withCredintials: false };
@@ -230,13 +237,55 @@ changeSuiviAlertePerso(serviceName: string, data: Suivi_Alerte_Perso) {
   return this.http.put<Suivi_Alerte_Perso>(`${url}${data.follower}/${data.alerte}/`, data, options);
 }
 
-// =======================================================
-
 getSuiviAlertePersoFilter(serviceName: string, data: Suivi_Alerte_Perso) {
   const headers = new HttpHeaders({  });
   const options = { headers: headers, withCredintials: false };
   const url = environment.apiUrl +'/'+ serviceName;
   return this.http.get<Suivi_Alerte_Perso>(`${url}${data.follower}/${data.alerte}/`, options);
+}
+
+changeAlerteInfos(serviceName: string, data: Alerte) {
+  const headers = new HttpHeaders({  });
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.put<Alerte>(`${url}${data.id}/`, data, options);
+}
+
+myAlertesProg(serviceName: string, id: any) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Alerte[]>(`${url} ${id}/`, options);
+}
+
+deleteSuiviAlertePerso(serviceName: string, data: Suivi_Alerte_Perso) {
+  const headers = new HttpHeaders({  });
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.delete<any>(`${url}${data.id}/`, options);
+}
+
+deleteGroupeTarget(serviceName: string, data: Suivi_Alerte_Group) {
+  const headers = new HttpHeaders({  });
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.delete<any>(`${url}${data.id}/`, options);
+}
+
+deleteLocaliteTarget(serviceName: string, data: Suivi_Alerte_Localite) {
+  const headers = new HttpHeaders({  });
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.delete<any>(`${url}${data.id}/`, options);
+}
+
+// =======================================================
+
+killAlerte(serviceName: string, data: Alerte) {
+  const headers = new HttpHeaders({  });
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.delete<any>(`${url}${data.id}/`, options);
 }
 // =====================================================
 

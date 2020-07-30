@@ -7,52 +7,39 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen class="ion-padding">
-  <!-- Default textarea -->
-<ion-textarea></ion-textarea>
-
-<!-- Textarea in an item with a placeholder -->
-<ion-item>
-  <ion-textarea placeholder="Enter more information here..."></ion-textarea>
-</ion-item>
-
-<!-- Textarea in an item with a floating label -->
-<ion-item>
-  <ion-label position="floating">Description</ion-label>
-  <ion-textarea></ion-textarea>
-</ion-item>
-
-<!-- Disabled and readonly textarea in an item with a stacked label -->
-<ion-item>
-  <ion-label position="stacked">Summary</ion-label>
-  <ion-textarea
-    disabled
-    readonly
-    value="Ionic enables developers to build performant, high-quality mobile apps.">
-  </ion-textarea>
-</ion-item>
-
-<!-- Textarea that clears the value on edit -->
-<ion-item>
-  <ion-label>Comment</ion-label>
-  <ion-textarea clearOnEdit="true"></ion-textarea>
-</ion-item>
-
-<!-- Textarea with custom number of rows and cols -->
-<ion-item>
-  <ion-label>Notes</ion-label>
-  <ion-textarea rows="6" cols="20" placeholder="Enter any notes here..."></ion-textarea>
-</ion-item>
+<ion-content>
+  <ion-list>
+    <ion-list-header  color="danger">
+      <h5>Mes alertes programmées</h5>
+    </ion-list-header>
+    <ion-card button *ngFor="let elem of (mesListProg)">
+      <ion-item>
+        <ion-icon name="warning" color="danger" slot="start"></ion-icon>
+        <ion-label> {{elem.alerte.titre}} </ion-label>
+        <ion-button (click)="myProgDetails(elem.alerte)" fill="outline" slot="end"> Plus </ion-button>
+      </ion-item>    
+      <ion-card-content>
+        Alerte {{elem.alerte.profil}} crée depuis {{elem.alerte.dateAlerte | date}} à {{elem.alerte.dateAlerte | date:'H:mm:ss' }}
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
 </ion-content>
 
+<ion-fab horizontal="end" vertical="bottom" slot="fixed">
+  <ion-fab-button (click)="preProgrammerAlerte()" color="primary" style="margin: 13px; margin-right: 0px; width: 40px; height: 40px; line-height: 40px;">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
+
+
+
 <!-- 
-<ion-fab horizontal="end" vertical="center" slot="fixed">
+    <ion-fab horizontal="end" vertical="center" slot="fixed">
     <ion-fab-button color="danger">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>
 
-<ion-content fullscreen class="ion-padding">
 <ion-fab horizontal="center" vertical="center" slot="fixed">
     <ion-fab-button color="light">
       <ion-icon name="share"></ion-icon>
@@ -99,9 +86,7 @@
       </ion-fab-button>
     </ion-fab-list>
   </ion-fab>
-</ion-content> -->
 
-<!-- <ion-content fullscreen class="ion-padding">
   <ion-fab horizontal="start" vertical="bottom" slot="fixed">
     <ion-fab-button color="dark">
       <ion-icon md="caret-up" ios="chevron-up-circle-outline"></ion-icon>
@@ -121,9 +106,7 @@
       </ion-fab-button>
     </ion-fab-list>
   </ion-fab>
-</ion-content> -->
 
-<!-- <ion-content fullscreen class="ion-padding">
   <ion-fab horizontal="end" vertical="bottom" slot="fixed">
     <ion-fab-button color="light">
       <ion-icon md="caret-back" ios="chevron-back-circle-outline"></ion-icon>
@@ -140,17 +123,13 @@
       </ion-fab-button>
     </ion-fab-list>
   </ion-fab>
-</ion-content>   -->
 
-<!-- <ion-content fullscreen class="ion-padding">
   <ion-fab horizontal="end" vertical="center" slot="fixed">
     <ion-fab-button color="danger">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>
-</ion-content> -->
 
-<!-- <ion-content fullscreen class="ion-padding">
   <ion-fab horizontal="end" vertical="top" slot="fixed" edge>
     <ion-fab-button>
       <ion-icon name="add"></ion-icon>
@@ -166,4 +145,5 @@
         <ion-icon name="logo-vimeo"></ion-icon>
       </ion-fab-button>
     </ion-fab-list>
-  </ion-fab> -->
+  </ion-fab> 
+ -->

@@ -57,7 +57,8 @@ export class MycoursdetailsPage implements OnInit {
 // ======================================================================================
 
 
-  marker:any; latitude:any=""; longitude:any="";  timestamp:any=""; deviceToken: string = "";
+  marker:any; latitude:any=""; longitude:any="";  timestamp:any=""; deviceToken: string = ""; 
+  isPreparation:boolean = false;  isHistorique:boolean = false;  isCours:boolean = false;
 
   base:string = environment.apiUrl; base64Image:any; 
   newPiece = {id: null,article: null,alerte: null,proprio: '',type: '',titre: '',piece: null, texto: '',datePiece: null}
@@ -77,7 +78,7 @@ export class MycoursdetailsPage implements OnInit {
   nbNotYet: number = 0;                       wantAdd: boolean = false;
 
   textMessage: string = ""; coords : {} = {};  type: string = "";
-  isOther: boolean = true;
+  isOther: boolean = true;  backPage:string = ""; from:string = "";
 
   constructor(private authService: AuthService, public alerteService : AlerteService, public piecesService : PiecesService,
     public storageService : StorageService, private router: Router, private activatedRoute: ActivatedRoute,
@@ -116,6 +117,10 @@ resetBadgeCount() {
 }
 
 async loadData(){
+  this.backPage = this.activatedRoute.snapshot.params["backPage"];
+  if(this.backPage=="/folder/alertes/options/coursalerte"){this.isCours = true; this.from = "coursalerte";}
+  else if(this.backPage=="/folder/alertes/options/prealerte"){this.isPreparation = true; this.from = "prealerte";}
+  else if(this.backPage=="/folder/alertes/options/histalerte"){this.isHistorique = true; this.from = "histalerte";}
   const ALERTEID = this.activatedRoute.snapshot.params["id"];      
   this.alerteService.getAlerte(ALERTEID).subscribe(res1=>{
     this.alerteDetalis=res1;  if(this.alerteDetalis){this.isAlerteDetalis = true;}
@@ -361,15 +366,15 @@ uploadSelectAFile(filePathUrl, fileName) {
 }
 
 loadContact(){
-  this.router.navigate(['/folder/alertes/options/coursalerte/contactsalerte', this.alerteDetalis.id]);    
+  this.router.navigate(['/folder/alertes/options/coursalerte/contactsalerte', this.alerteDetalis.id, {"from": this.from}]);    
 }
 
 newGroupeFollower(){
-  this.router.navigate(['/folder/alertes/options/coursalerte/contactsalerte', this.alerteDetalis.id,'newgroupefollowers']);    
+  this.router.navigate(['/folder/alertes/options/coursalerte/contactsalerte', this.alerteDetalis.id,'newgroupefollowers', {"from": this.from}]);    
 }
 
 newLocaliteFollower(){
-  this.router.navigate(['/folder/alertes/options/coursalerte/contactsalerte', this.alerteDetalis.id,'newlocalitefollowers']);    
+  this.router.navigate(['/folder/alertes/options/coursalerte/contactsalerte', this.alerteDetalis.id,'newlocalitefollowers', {"from": this.from}]);    
 }
 
 seeFollower(){
@@ -388,6 +393,58 @@ seeAgencesFollower(){
 addPieceArea(){
   if(this.wantAdd==true){this.wantAdd=false; this.textMessage = "";}
   else if(this.wantAdd==false){this.wantAdd=true; this.textMessage = "";}
+}
+
+stopAlerte(alerte: Alerte){
+  alerte.statut = "Inactive";
+  this.alerteService.changeAlerteInfos(alerte).subscribe(res1=>{
+    this.router.navigate(['/folder/alertes/options/coursalerte']); 
+  },er=>{console.log(er); });
+}
+
+anulerAlerte(alerteDetalis){
+  this.alerteService.killAlerte(alerteDetalis).subscribe(res1=>{
+    this.router.navigate(['/folder/alertes/options/prealerte']); 
+  },er=>{console.log(er); });
+}
+
+killFollower(followerVictime: Suivi_Alerte_Perso){  
+  this.alerteService.deleteSuiviAlertePerso(followerVictime).subscribe(res3=>{
+    console.log(JSON.stringify(followerVictime)," deleted successfully");
+  },er=>{console.log(er); });
+}
+
+killGroupFollower(groupeFollowerVictime: Suivi_Alerte_Group){
+  this.alerteService.deleteGroupeTarget(groupeFollowerVictime).subscribe(res=>{
+    console.log(JSON.stringify(groupeFollowerVictime)," deleted successfully");
+    this.alerteService.getGroupeMembres(groupeFollowerVictime.groupe).subscribe(res2=>{
+      let membres = res2;
+        for(let m of membres){
+          let followerVictime: Suivi_Alerte_Perso={"alerte": groupeFollowerVictime.alerte, "follower":m.user_member};
+          this.alerteService.getSuiviAlertePersoFilter(followerVictime).subscribe(res3=>{            
+            // 
+            this.killFollower(res3);
+            // 
+          },er=>{console.log(er); });            
+        }              
+    },er=>{console.log(er);});
+  },er=>{console.log("Erreur killing cible groupe: ",JSON.stringify(er));});
+}
+
+killLocaliteFollower(localiteFollowerVictime: Suivi_Alerte_Localite){
+  this.alerteService.deleteLocaliteTarget(localiteFollowerVictime).subscribe(res=>{
+    console.log(JSON.stringify(localiteFollowerVictime)," deleted successfully");
+    this.alerteService.getLocaliteUsers(localiteFollowerVictime.localite).subscribe(res2=>{
+      for(let m of res2){ 
+        let followerVictime: Suivi_Alerte_Perso={"alerte": localiteFollowerVictime.alerte, "follower":m.id};
+        this.alerteService.getSuiviAlertePersoFilter(followerVictime).subscribe(res3=>{            
+          // 
+          this.killFollower(res3);
+          // 
+        },er=>{console.log(er); });
+      }
+    },er=>{console.log(er);});
+  },er=>{console.log("Erreur killing cible localite: ",JSON.stringify(er));});
 }
 
 

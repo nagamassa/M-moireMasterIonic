@@ -16,6 +16,10 @@ export class AlerteService {
     private router: Router
   ) { }
 
+  programmerAlerte(postData: any, titre: any): Observable<any> {
+    return this.httpService.programmerAlerte('wallu/alertes/', postData, titre);
+  }
+
   lancerAlerteDirect(postData: any): Observable<any> {
     return this.httpService.lancerAlerteDirect('wallu/alertes/', postData);
   }
@@ -108,9 +112,33 @@ export class AlerteService {
     return this.httpService.changeSuiviAlertePerso('wallu/alertes/suivi_perso/', postData);
   }
 
-// ===================================================
   getSuiviAlertePersoFilter(postData: Suivi_Alerte_Perso): Observable<Suivi_Alerte_Perso> {
-    return this.httpService.changeSuiviAlertePerso('wallu/alertes/suivi_perso/', postData);
+    return this.httpService.getSuiviAlertePersoFilter('wallu/alertes/suivi_perso/', postData);
+  }
+
+  changeAlerteInfos(postData: Alerte): Observable<Alerte> {
+    return this.httpService.changeAlerteInfos('wallu/alertes/', postData);
+  }
+
+  myAlertesProg(postData: any): Observable<Alerte[]>{
+    return this.httpService.myAlertesProg('wallu/alertes/minesProg/', postData);
+  } 
+
+  deleteSuiviAlertePerso(postData: Suivi_Alerte_Perso): Observable<any> {
+    return this.httpService.deleteSuiviAlertePerso("wallu/alertes/"+postData.alerte+"/suivi_perso/", postData);
+  }
+
+  deleteGroupeTarget(postData: Suivi_Alerte_Group): Observable<any> {
+    return this.httpService.deleteGroupeTarget("wallu/alertes/"+postData.alerte+"/suivi_groups/", postData);
+  }
+  deleteLocaliteTarget(postData: Suivi_Alerte_Localite): Observable<any> {
+    return this.httpService.deleteLocaliteTarget("wallu/alertes/"+postData.alerte+"/suivi_localites/", postData);
+  } 
+
+// ===================================================
+
+  killAlerte(postData: Alerte): Observable<any> {
+    return this.httpService.killAlerte('wallu/alertes/', postData);
   }
 // ====================================================
 

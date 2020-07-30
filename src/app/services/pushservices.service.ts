@@ -4,6 +4,11 @@ import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { StorageService } from './storage.service';
 import { AuthConstants } from '../config/auth-constants';
+import { Suivi_Alerte_Perso } from '../types';
+import { AuthService } from './auth.service';
+import { AlerteService } from './alerte.service';
+import * as moment from "moment";
+import 'moment/locale/pt-br';
  
 const { PushNotifications } = Plugins;
  
@@ -13,7 +18,11 @@ const { PushNotifications } = Plugins;
 })
 export class PushservicesService {
 
-  constructor(private router: Router, private http: HttpClient, private storageService: StorageService,) { }
+  suiviAlertePerso: Suivi_Alerte_Perso = {alerte: null, follower: null,
+    DateReception: null, DateReponse: null};
+  backPage:string = "/folder/alertes/options/coursalerte";
+
+  constructor(private router: Router, private http: HttpClient, private storageService: StorageService,private authService: AuthService, public alerteService : AlerteService,) { }
 
   public initPush() {
     if (Capacitor.platform !== 'web') {
@@ -48,22 +57,62 @@ export class PushservicesService {
       'pushNotificationReceived',
       async (notification: PushNotification) => {
         console.log('Push received: ' + JSON.stringify(notification));
+        const data = notification.data;
+        if (data.detailsId) { this.RecevoirAlerte(data.detailsId); }
       }
     );
  
     PushNotifications.addListener(
       'pushNotificationActionPerformed',
       async (notification: PushNotificationActionPerformed) => {
-        const data = notification.notification.data;
         console.log('Action performed: ' + JSON.stringify(notification.notification));
+        const data = notification.notification.data;        
         if (data.detailsId) {
-          this.router.navigateByUrl(`/folder/alertes/options/coursalerte/mycoursdetails/${data.detailsId}`);
+          this.lireAlerte(data.detailsId);
+          this.router.navigate(['/folder/alertes/options/coursalerte/mycoursdetails',data.detailsId,  {"backPage": "/folder/alertes/options/coursalerte"}]);
         }
       }
     );
   }
 
-  // 
+  //
+  RecevoirAlerte(alerteID) {
+    this.storageService.get(AuthConstants.AUTHDATA).then(res =>{
+      this.suiviAlertePerso.alerte = alerteID; this.suiviAlertePerso.follower = res.id;
+      this.alerteService.getSuiviAlertePersoFilter(this.suiviAlertePerso).subscribe(res3=>{
+        if(res3.reception=="Faux"){
+          this.suiviAlertePerso = res3; this.suiviAlertePerso.reception = "Vrai";
+          moment.locale('fr');
+          const now = moment().format("YYYY-MM-DDTHH:mm:ss");
+          this.suiviAlertePerso.DateReception = String(now);
+          console.log("", JSON.stringify(now));            
+          this.alerteService.changeSuiviAlertePerso(this.suiviAlertePerso).subscribe(res4=>{
+            console.log("Alerte reçu avec succés", JSON.stringify(res4));              
+          },er=>{console.log(er); });
+        }
+      },er=>{console.log(er); });
+      this.router.navigate(['/folder/alertes/options/coursalerte/mycoursdetails',alerteID, {"backPage": this.backPage}]); 
+    },err => { console.log('erreur getting local data', JSON.stringify(err)); });
+  }
+
+  lireAlerte(alerteID) {
+    this.storageService.get(AuthConstants.AUTHDATA).then(res =>{
+      this.suiviAlertePerso.alerte = alerteID; this.suiviAlertePerso.follower = res.id;
+      this.alerteService.getSuiviAlertePersoFilter(this.suiviAlertePerso).subscribe(res3=>{
+        if(res3.reponse=="Faux"){
+          this.suiviAlertePerso = res3; this.suiviAlertePerso.reponse = "Vrai";
+          moment.locale('fr');
+          const now = moment().format("YYYY-MM-DDTHH:mm:ss");
+          this.suiviAlertePerso.DateReponse = String(now);
+          console.log("", JSON.stringify(now));            
+          this.alerteService.changeSuiviAlertePerso(this.suiviAlertePerso).subscribe(res4=>{
+            console.log("Alerte vu avec succés", JSON.stringify(res4));              
+          },er=>{console.log(er); });
+        }
+      },er=>{console.log(er); });
+      this.router.navigate(['/folder/alertes/options/coursalerte/mycoursdetails',alerteID, {"backPage": this.backPage}]); 
+    },err => { console.log('erreur getting local data', JSON.stringify(err)); });
+  }
   // 
   lancerNotification(detailsId: number, target: string, victime:any) {
     const bodyMessage = "Victime: "+victime?.alias;   const title = "Nouveaux SOS en cours";

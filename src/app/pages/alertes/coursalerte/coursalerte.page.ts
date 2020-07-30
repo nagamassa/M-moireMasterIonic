@@ -21,6 +21,7 @@ export class CoursalertePage implements OnInit {
   public mesAlerte : Alerte[] = []; public mesListEnCours : any[] = []; public autreListEnCours : any[] = [];
   suiviAlertePerso: Suivi_Alerte_Perso = {alerte: null, follower: null,
   DateReception: null, DateReponse: null};
+  backPage:string = "/folder/alertes/options/coursalerte";
 
   constructor(private authService: AuthService, public alerteService : AlerteService,
               public storageService : StorageService, private router: Router,) { }
@@ -81,9 +82,8 @@ export class CoursalertePage implements OnInit {
           },er=>{console.log(er); });
         }
       },er=>{console.log(er); });
-      this.router.navigate(['/folder/alertes/options/coursalerte/mycoursdetails',elem.id]); 
+      this.router.navigate(['/folder/alertes/options/coursalerte/mycoursdetails',elem.id, {"backPage": this.backPage}]); 
     },err => { console.log('erreur getting local data', JSON.stringify(err)); });
   }
-
 
 }

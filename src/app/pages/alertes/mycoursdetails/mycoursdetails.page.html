@@ -1,14 +1,22 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+      <ion-back-button defaultHref="{{backPage}}"></ion-back-button>
     </ion-buttons>
     <ion-title>Détails de l'alerte</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content fullscreen="true">
-  <!-- <ion-button (click)="resetBadgeCount()" expand="block"></ion-button> -->
+  <!-- <ion-button (click)="resetBadgeCount()" expand="block"> EFFACER LES NOTIFS</ion-button> -->
+  <div [hidden]="!isCours" >
+    <div [hidden]="isOther" >
+      <ion-button (click)="stopAlerte(alerteDetalis)" color = "success" expand="block"> STOP ALERTE</ion-button>
+    </div>
+  </div>
+  <div [hidden]="!isPreparation" >
+    <ion-button (click)="anulerAlerte(alerteDetalis)" color = "primary" expand="block"> ANULER ALERTE</ion-button>
+  </div>
 <!-- ========================================================================= -->
   <ion-card>
     <div #map id="map"></div>
@@ -22,13 +30,30 @@
   </ion-card>
 <!-- ========================================================================= -->
   <ion-list>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-item>
+          <ion-label> Alerte </ion-label>
+        </ion-item><br>
+        <ion-card-subtitle> N°{{alerteDetalis?.id}} {{alerteDetalis?.titre}} </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content class="desc">
+        <p><b>Profil: </b> {{alerteDetalis?.profil}} </p>
+        <p><b>Status: </b>  {{alerteDetalis?.statut}} </p>
+        <p><b>Date :</b>  {{alerteDetalis?.dateAlerte | date}} à {{alerteDetalis?.dateAlerte | date:'H:mm:ss'}} </p>
+        <p><b>déja utilisée :</b>  {{alerteDetalis?.utilisee}} </p>
+        <p><b>type:</b>  {{alerteDetalis?.type}} </p>
+      </ion-card-content>
+    </ion-card>
+
   <ion-card [hidden]="!isAuteur">
     <ion-img src="{{auteur?.photo}}"></ion-img>
     <ion-card-header>
       <ion-item>
         <ion-label> Victime </ion-label>
       </ion-item><br>
-      <ion-card-subtitle>alias {{auteur?.alias}}</ion-card-subtitle>
+      <ion-card-subtitle> alias {{auteur?.alias}} </ion-card-subtitle>
     </ion-card-header>
     <ion-card-content class="desc">
       <h5>Descriptions:</h5> <p> {{auteur?.description}} </p>
@@ -68,7 +93,7 @@
                 <div *ngSwitchCase = "'Vrai'">
                   <div [ngSwitch]="f.reponse">      
                     <div *ngSwitchCase = "'Vrai'">
-                      <ion-note slot="end" color="success"><h2><ion-icon name="checkmark-done-outline"></ion-icon></h2></ion-note>
+                      <ion-note slot="start" color="success"><ion-icon name="checkmark-done-outline"></ion-icon></ion-note>
                     </div>        
                     <div *ngSwitchCase = "'Faux'">
                       <ion-note slot="end" color="primary"><h2><ion-icon name="checkmark-done-outline"></ion-icon></h2></ion-note>
@@ -79,6 +104,7 @@
                   <ion-note slot="end" ><h2><ion-icon name="checkmark-done-outline"></ion-icon></h2></ion-note>
                 </div>
               </div>
+              <div [hidden]="!isPreparation"><ion-fab horizontal="end" vertical="bottom" slot=""><ion-fab-button (click)="killFollower(f)" color="danger" style="margin: 0px; margin-right: 0px; width: 25px; height: 25px; line-height: 25px;"><ion-icon name="close-circle"></ion-icon></ion-fab-button></ion-fab></div>
               <!--  -->
             </ion-item>
           </ion-item-sliding>          
@@ -97,7 +123,7 @@
       <ion-card-content>
           <ion-item class="lab" *ngFor="let gf of groupFollower; let i = index">
             <ion-label>{{ groupFollowerData[i]?.nom }}</ion-label>
-            <!-- <ion-note slot="end" color="primary">{{gf?.nombreReception}} - {{gf?.nombreReponse}}</ion-note> -->
+            <div [hidden]="!isPreparation"><ion-fab horizontal="end" vertical="bottom" slot=""><ion-fab-button (click)="killGroupFollower(gf)" color="danger" style="margin: 0px; margin-right: 0px; width: 25px; height: 25px; line-height: 25px;"><ion-icon name="close-circle"></ion-icon></ion-fab-button></ion-fab></div>
           </ion-item>
       </ion-card-content>
     </ion-card>
@@ -115,7 +141,7 @@
         <ion-list>
           <ion-item class="lab" *ngFor="let lf of localiteFollower; let i = index">
             <ion-label>{{localiteFollowerData[i]?.region}} / {{localiteFollowerData[i]?.adresse}} </ion-label>
-            <!-- <ion-note slot="end" color="primary">{{lf?.nombreReception}} - {{lf?.nombreReponse}}</ion-note> -->
+            <div [hidden]="!isPreparation"><ion-fab horizontal="end" vertical="bottom" slot=""><ion-fab-button (click)="killLocaliteFollower(lf)" color="danger" style="margin: 0px; margin-right: 0px; width: 25px; height: 25px; line-height: 25px;"><ion-icon name="close-circle"></ion-icon></ion-fab-button></ion-fab></div>
           </ion-item>
         </ion-list>
       </ion-card-content>
@@ -213,68 +239,18 @@
 </div>
 
 <!-- Bouton ajout piece -->
-<div [hidden]="isOther">
-  <ion-fab horizontal="end" vertical="bottom" slot="fixed">
-    <ion-fab-button (click)="addPieceArea()" color="primary" style="margin: 13px; margin-right: 0px; width: 40px; height: 40px; line-height: 40px;">
-      <ion-icon [hidden]="wantAdd" name="add"></ion-icon>
-      <ion-icon [hidden]="!wantAdd" name="remove-circle"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+<div [hidden]="isHistorique">
+  <div [hidden]="isOther">
+    <ion-fab horizontal="end" vertical="bottom" slot="fixed">
+      <ion-fab-button (click)="addPieceArea()" color="primary" style="margin: 13px; margin-right: 0px; width: 40px; height: 40px; line-height: 40px;">
+        <ion-icon [hidden]="wantAdd" name="add"></ion-icon>
+        <ion-icon [hidden]="!wantAdd" name="remove-circle"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  </div>
 </div>
 <!--  -->
 
 
 
 
-
-<!-- <ion-fab horizontal="end" vertical="bottom" slot="fixed">
-  <ion-fab-button color="light">
-    Ajouter 
-  </ion-fab-button>
-  <ion-fab-list side="start">
-    <ion-fab-button color="light" (click)="audioActionSheet()">
-      <ion-icon name="musical-notes-outline"></ion-icon>
-    </ion-fab-button>
-    <ion-fab-button color="light" (click)="videoActionSheet()">
-      <ion-icon name="videocam-outline"></ion-icon>
-    </ion-fab-button>
-    <ion-fab-button color="light" (click)="photoActionSheet()">
-      <ion-icon name="image-outline"></ion-icon>
-    </ion-fab-button>
-  </ion-fab-list>
-</ion-fab> -->
-
-<!-- <ion-slides [options]="config" pager="true" paginationType="bullets">
-  <ion-slide *ngFor="let pc of pieces">
-    <div [ngSwitch]="pc.type">
-      <div *ngSwitchCase = "'Audio'">
-        <ion-card button  (click)="piecemodal(pc)">
-          <ion-card-title class="desc">{{pc.type}}</ion-card-title>
-          <ion-img src="{{url}}" alt="{{pc.type}}"></ion-img>
-        </ion-card>
-      </div>
-
-      <div *ngSwitchCase = "'Vidéo'">
-        <ion-card button  (click)="piecemodal(pc)">
-          <ion-card-title class="desc">{{pc.type}}</ion-card-title>
-          <ion-img src="{{url}}" alt="{{pc.type}}"></ion-img>
-        </ion-card>
-      </div>
-
-      <div *ngSwitchCase = "'Photo'">
-        <ion-card button  (click)="piecemodal(pc)">
-          <ion-card-title class="desc">{{pc.type}}</ion-card-title>
-          <ion-img src="{{base+pc.piece}}" alt="{{pc.type}}"></ion-img>
-        </ion-card>
-      </div>
-      <div *ngSwitchCase = "'Texte'">
-        <ion-card button  (click)="piecemodal(pc)">
-          <ion-card-title class="desc">{{pc.type}}</ion-card-title>
-          <ion-card-content class="desc">
-            {{pc.texto}}
-          </ion-card-content>
-        </ion-card>
-      </div>
-    </div>
-  </ion-slide>
-</ion-slides> -->

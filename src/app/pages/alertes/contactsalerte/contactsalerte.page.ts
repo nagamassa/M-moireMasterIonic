@@ -19,6 +19,7 @@ export class ContactsalertePage implements OnInit {
   alerteDetalis : Alerte;  MesContacts: Contact[] = []; listContacts: Contact[] = []; selectedContact: any[] = [];
   suiviAlertePerso: Suivi_Alerte_Perso = {alerte: null, follower: null, reception: "Faux",
   reponse: "Faux", DateReception: null, DateReponse: null};  pesonnesFollower: Suivi_Alerte_Perso[];
+  backPage:string = ""; isCoursAlerte:boolean = false;
   
   constructor(public alerteService : AlerteService, private router: Router, private activatedRoute: ActivatedRoute,
     private toastService : ToastService, private contacts: Contacts, private callNumber: CallNumber,
@@ -28,6 +29,10 @@ export class ContactsalertePage implements OnInit {
   ngOnInit() { this.loadInfos(); }
 
   async loadInfos(){
+    let from = this.activatedRoute.snapshot.params["from"];
+    if(from == "coursalerte"){this.backPage ="/folder/alertes/options/coursalerte"; this.isCoursAlerte = true;}
+    else if(from = "prealerte"){this.backPage ="/folder/alertes/options/prealerte"}
+    else if(from = "histalerte"){this.backPage=="/folder/alertes/options/histalerte"}
     
     const ALERTEID = this.activatedRoute.snapshot.params["id"];      
     this.alerteService.getAlerte(ALERTEID).subscribe(res1=>{
@@ -52,7 +57,7 @@ export class ContactsalertePage implements OnInit {
     );
   }
   
-  ajouterCible(cibles, selectedAlerte){
+  ajouterCible(cibles, selectedAlerte){ 
     this.alerteService.getAlerteFollower(selectedAlerte.id).subscribe(res8=>{ 
       this.pesonnesFollower = res8;    let notLinkedUser = 0;
       for (let i = 0; i < cibles.length; i++) { 
@@ -62,11 +67,13 @@ export class ContactsalertePage implements OnInit {
           this.alerteService.findByPhone(cibles[i].num).subscribe(target=>{
             this.suiviAlertePerso.alerte = selectedAlerte.id; this.suiviAlertePerso.follower = target.id; 
             this.alerteService.ajouterPersonTarget(this.suiviAlertePerso).subscribe(res=>{
-              this.authService.getCurrenttUser(res.follower).subscribe((cu:any) => {
-                this.authService.userData$.subscribe(res0 => {
-                  this.PushService.lancerNotification(selectedAlerte.id, cu.idNotification, res0 );
-                });                
-              })
+              if(this.isCoursAlerte){
+                this.authService.getCurrenttUser(res.follower).subscribe((cu:any) => {
+                  this.authService.userData$.subscribe(res0 => {
+                    this.PushService.lancerNotification(selectedAlerte.id, cu.idNotification, res0 );
+                  });                
+                })
+              }
               console.log("cible personne bien ajouté", JSON.stringify(res)); 
             },er=>{console.log("Erreur ajout de cible personne: ",JSON.stringify(er));});
           },er=>{console.log("Erreur test: ",JSON.stringify(er));});
@@ -74,7 +81,7 @@ export class ContactsalertePage implements OnInit {
         notLinkedUser = 0; 
       }
     },er=>{console.log(er);})
-    this.router.navigate(['/folder/alertes/options/coursalerte/mycoursdetails',selectedAlerte.id]); 
+    this.router.navigate(['/folder/alertes/options/coursalerte/mycoursdetails',selectedAlerte.id, {"backPage": this.backPage}]); 
   }
 
   loadSelected(selectedElem){

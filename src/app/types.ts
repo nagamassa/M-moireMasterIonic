@@ -18,7 +18,7 @@ export interface Membre {
 }
 
 export interface Alerte {
-    id: number; profil: string; statut: string; dateAlerte: string; auteur: number; titre?: string;
+    id: number; profil: string; statut: string; dateAlerte: string; auteur: number; titre?: string, utilisee?:string, type?: string;
 }
 
 export interface PieceJointe {

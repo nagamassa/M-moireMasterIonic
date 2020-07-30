@@ -19,7 +19,7 @@
     <ion-card button *ngFor="let elem of (mesListEnCours)">
       <ion-item>
         <ion-icon name="warning" color="danger" slot="start"></ion-icon>
-        <ion-label> {{elem.user.alias}} </ion-label>
+        <ion-label>ID: {{elem.alerte.id}} <br> {{elem.user.alias}} <br> {{elem.alerte?.titre}} </ion-label>
         <ion-button (click)="myCoursDetails(elem.alerte)" fill="outline" slot="end"> Plus </ion-button>
       </ion-item>    
       <ion-card-content>
@@ -33,7 +33,7 @@
     <ion-card button *ngFor="let elem of autreListEnCours">
       <ion-item>
         <ion-icon name="warning" color="danger" slot="start"></ion-icon>
-        <ion-label> {{elem.user.alias}} </ion-label>
+        <ion-label>ID: {{elem.alerte.id}} <br> {{elem.user.alias}} <br> {{elem.alerte?.titre}} </ion-label>
         <ion-button (click)="myCoursDetails(elem.alerte)" fill="outline" slot="end"> Plus </ion-button>
       </ion-item>    
       <ion-card-content>
