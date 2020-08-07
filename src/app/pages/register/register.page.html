@@ -8,14 +8,9 @@
 
   <div>
     <image-cropper
-        [imageBase64]="base64Image"
-        [imageChangedEvent]="imageChangedEvent"
-        [maintainAspectRatio]="true"
-        [aspectRatio]="4 / 3"
-        format="png"
-        (imageCropped)="imageCropped($event)"
-        outputType="base64"
-    ></image-cropper>  
+        [imageBase64]="base64Image" [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true" [aspectRatio]="4 / 3"
+        format="png" (imageCropped)="imageCropped($event)" outputType="base64">
+    </image-cropper>  
   </div>
   <div> 
     <ion-button expand="full" class="ion-padding" color="primary" (change)="fileChangeEvent($event)" (click)="presentActionSheet()">Prendre une photo</ion-button>
@@ -23,29 +18,35 @@
   <div style="margin-top: 2%;">
     <img [src]="croppedImage" />
   </div>
-  
 
     <ion-list>
       <div class="info-1">
         <ion-item>
+          <ion-label position="stacked"><ion-icon name="person"></ion-icon> Username </ion-label>
           <ion-input type="text" placeholder="username" [(ngModel)]="user.username"> </ion-input>
         </ion-item>
         <ion-item>
+          <ion-label position="stacked"><ion-icon name="lock-open"></ion-icon> Password </ion-label>
           <ion-input type="password" placeholder="password" [(ngModel)]="user.password"> </ion-input>
         </ion-item>
         <ion-item>
+          <ion-label position="stacked"><ion-icon name="mail-outline"></ion-icon> Email </ion-label>
           <ion-input type="email" placeholder="email" [(ngModel)]="user.email"> </ion-input>
         </ion-item>
         <ion-item>
+          <ion-label position="stacked"> Prénom </ion-label>
           <ion-input type="text" placeholder="Prénom" [(ngModel)]="user.first_name"> </ion-input>
         </ion-item>
         <ion-item>
-          <ion-input type="text" placeholder="Nom" [(ngModel)]="user.lastt_name"> </ion-input>
+          <ion-label position="stacked"> Nom </ion-label>
+          <ion-input type="text" placeholder="Nom" [(ngModel)]="user.last_name"> </ion-input>
         </ion-item>
         <ion-item>
+          <ion-label position="stacked"> Alias </ion-label>
           <ion-input type="text" placeholder="Alias" [(ngModel)]="user.alias"> </ion-input>
         </ion-item>
         <ion-item>
+          <ion-label position="stacked"><ion-icon name="phone-portrait-outline"></ion-icon> Téléphone </ion-label>
           <ion-select placeholder="Operateur" [(ngModel)]="operateur">
             <ion-select-option value="33">33</ion-select-option>
             <ion-select-option value="77">77</ion-select-option>
@@ -56,14 +57,34 @@
           <ion-input type="number" placeholder="numero" [(ngModel)]="numero"> </ion-input>
         </ion-item>
         <ion-item>
+          <ion-label position="stacked"><ion-icon name="calendar-outline"></ion-icon> Date de naissance </ion-label>
           <ion-input type="date" placeholder="Date de naissance" [(ngModel)]="user.dateNaissance"> </ion-input>
         </ion-item>
         <ion-item>
+          <ion-label position="stacked"> Description </ion-label>
           <ion-textarea placeholder="Description" [(ngModel)]="user.description"></ion-textarea>
         </ion-item>
+        <!--  -->
+        <ion-item>          
+          <ion-label position="stacked"><ion-icon name="location-outline"></ion-icon> Localité</ion-label>
+          Existante / Nouvelle: 
+          <ion-toggle slot="end" (click)="changeLocalite()" color="primary"></ion-toggle>       
+        </ion-item>
+        <ion-item [hidden]="isNewLoc">
+          <ion-select [(ngModel)]="localTemp" (ionChange)="loadSelected(localTemp)" >
+            <div *ngFor="let l of selectedLocalite; let i = index">
+              <ion-select-option value="{{l.realID}}">{{l?.region + ' ' + l?.adresse}}</ion-select-option>
+            </div>
+          </ion-select>
+        </ion-item>
+        <ion-item [hidden]="!isNewLoc">
+          <ion-input type="text" placeholder="Region" [(ngModel)]="finalLocalite.region"> </ion-input>
+          <ion-input type="text" placeholder="Adresse" [(ngModel)]="finalLocalite.adresse"> </ion-input>
+        </ion-item>
+        <!--  -->
 
-        <ion-item lines='none'> Si vous avez déja un compte
-          <a routerLink='/login'>: Connceter ici</a>
+        <ion-item lines='none'> déja un compte, alors 
+          <a routerLink='/login'>: Connecter ici</a>
         </ion-item>
       </div>
 

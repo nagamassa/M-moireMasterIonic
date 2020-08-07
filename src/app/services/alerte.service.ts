@@ -135,10 +135,14 @@ export class AlerteService {
     return this.httpService.deleteLocaliteTarget("wallu/alertes/"+postData.alerte+"/suivi_localites/", postData);
   } 
 
-// ===================================================
-
   killAlerte(postData: Alerte): Observable<any> {
     return this.httpService.killAlerte('wallu/alertes/', postData);
+  }
+
+// ===================================================
+
+  killPiece(postData: PieceJointe): Observable<any> {
+    return this.httpService.killPiece('wallu/alertes/'+postData.alerte+'/pieces/'+postData.id+'/');
   }
 // ====================================================
 

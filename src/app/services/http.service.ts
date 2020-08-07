@@ -35,13 +35,19 @@ change_notification(id: any, idNotification: string) {
   const url = environment.apiUrl +'/'+'wallu/utilisateurs/'+ id +'/change_notification/'+ idNotification +'/';
   return this.http.put(`${url}`, options);
 }
+
+addLocalite(serviceName: string, data: Localite) {
+  const headers = new HttpHeaders({ });  
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.post<Localite>(`${url}`, data, options);
+}
 // 
 signup(serviceName: string, data: any) {
     const headers = new HttpHeaders({
     });  
     const options = { headers: headers, withCredintials: false };
     const url = environment.apiUrl +'/'+ serviceName;
-    console.log(JSON.stringify(data))
     return this.http.post(`${url}`, data, options);
 }
 
@@ -279,13 +285,22 @@ deleteLocaliteTarget(serviceName: string, data: Suivi_Alerte_Localite) {
   return this.http.delete<any>(`${url}${data.id}/`, options);
 }
 
-// =======================================================
-
 killAlerte(serviceName: string, data: Alerte) {
   const headers = new HttpHeaders({  });
   const options = { headers: headers, withCredintials: false };
   const url = environment.apiUrl +'/'+ serviceName;
   return this.http.delete<any>(`${url}${data.id}/`, options);
+}
+
+
+// =======================================================
+
+
+killPiece(serviceName: string) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.delete<any>(`${url}`, options);
 }
 // =====================================================
 

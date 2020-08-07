@@ -6,6 +6,7 @@ import { StorageService } from './storage.service';
 import { AuthConstants } from '../config/auth-constants';
 import { AppComponent } from '../app.component';
 import { Capacitor } from '@capacitor/core';
+import { Localite } from '../types';
 
 @Injectable({
   providedIn: 'root'
@@ -50,6 +51,10 @@ export class AuthService {
     
   signup(postData: any): Observable<any> {
     return this.httpService.signup('auth/users/', postData);
+  }
+
+  addLocalite(postData: Localite): Observable<Localite> {
+    return this.httpService.addLocalite('wallu/localites/', postData);
   }
 
   logout() {

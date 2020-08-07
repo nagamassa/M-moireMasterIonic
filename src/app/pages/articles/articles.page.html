@@ -1,17 +1,22 @@
 
+<ion-tabs>
+  <ion-tab-bar slot="bottom">
 
-<ion-header [translucent]="false">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title>Articles</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true">
-  <div id="container">
-    <strong class="capitalize">articles</strong>
-    <p>Explore <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
-</ion-content>
+    <ion-tab-button tab="publications">
+      <ion-icon name="newspaper"></ion-icon>
+      <ion-label>Publications</ion-label>
+    </ion-tab-button>
+    
+    <ion-tab-button tab="prearticle">
+      <ion-icon name="build"></ion-icon>
+      <ion-label>Programmer</ion-label>
+    </ion-tab-button>
+    
+    <ion-tab-button tab="postarticle">
+      <ion-icon name="send"></ion-icon>
+      <ion-label>Envoyés</ion-label>
+    </ion-tab-button>
+    
+  </ion-tab-bar>
+</ion-tabs>
+<ion-icon name=""></ion-icon>

@@ -414,6 +414,12 @@ killFollower(followerVictime: Suivi_Alerte_Perso){
   },er=>{console.log(er); });
 }
 
+killPiece(piece: PieceJointe){  
+  this.alerteService.killPiece(piece).subscribe(res3=>{
+    console.log(JSON.stringify(piece)," deleted successfully");
+  },er=>{console.log(er); });
+}
+
 killGroupFollower(groupeFollowerVictime: Suivi_Alerte_Group){
   this.alerteService.deleteGroupeTarget(groupeFollowerVictime).subscribe(res=>{
     console.log(JSON.stringify(groupeFollowerVictime)," deleted successfully");

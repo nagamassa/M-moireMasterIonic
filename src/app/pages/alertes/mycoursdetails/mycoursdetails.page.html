@@ -196,7 +196,10 @@
               </div> 
             <ion-item color="primary">
             <p>{{pc.datePiece | date}} à {{pc.datePiece | date:'H:mm:ss' }}</p>
-            </ion-item>           
+            </ion-item>
+            <div [hidden]="!isPreparation" >
+              <ion-button (click)="killPiece(pc)" color = "danger"> supprimer</ion-button>
+            </div>          
           </ion-card>
         </div>
     </ion-card-content>
