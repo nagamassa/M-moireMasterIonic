@@ -5,31 +5,30 @@ import { AlerteService } from 'src/app/services/alerte.service';
 import { AuthConstants } from 'src/app/config/auth-constants';
 import { StorageService } from 'src/app/services/storage.service';
 import { Alerte, Utilisateur, Coordonnees, PieceJointe, Suivi_Alerte_Group, Suivi_Alerte_Localite, Suivi_Alerte_Agence, Suivi_Alerte_Perso, Groupe, Localite } from 'src/app/types';
-import {Camera, CameraOptions} from '@ionic-native/Camera/ngx';
+import { Camera} from '@ionic-native/Camera/ngx';
 import { MediaCapture, MediaFile, CaptureError, CaptureImageOptions } from '@ionic-native/media-capture/ngx';
-import { Media, MediaObject } from '@ionic-native/media/ngx';
-import { StreamingMedia, StreamingVideoOptions, StreamingAudioOptions } from '@ionic-native/streaming-media/ngx';
+import { StreamingMedia} from '@ionic-native/streaming-media/ngx';
 import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
 import { File, FileEntry } from '@ionic-native/File/ngx';
-import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer/ngx';
+import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer/ngx';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ModalController, ActionSheetController, Platform, NavController } from '@ionic/angular';
 import { PiecesService } from 'src/app/services/pieces.service';
 import { PiecepopupPage } from 'src/app/piecepopup/piecepopup.page';
 import { FilePath } from '@ionic-native/file-path/ngx';
 import { FileChooser } from '@ionic-native/file-chooser/ngx';
-import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
-import { VideoPlayer, VideoOptions  } from '@ionic-native/video-player/ngx';
+import { DomSanitizer } from '@angular/platform-browser';
+import { VideoPlayer,  } from '@ionic-native/video-player/ngx';
 import { ToastService } from 'src/app/services/toast.service';
-import { Contacts, Contact, ContactField, ContactName } from '@ionic-native/contacts/ngx';
+import { Contacts} from '@ionic-native/contacts/ngx';
 import { CallNumber } from '@ionic-native/call-number/ngx';
 import { SMS } from '@ionic-native/sms/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
-import { Plugins, Capacitor } from '@capacitor/core';
+import { Plugins } from '@capacitor/core';
 // ====================================================================================
 import { filter } from 'rxjs/operators';
 import { Storage } from '@ionic/storage';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 declare var google;
 // ====================================================================================
@@ -459,11 +458,9 @@ ionViewDidLoad() {
   const ALERTEID = this.activatedRoute.snapshot.params["id"];
   this.alerteService.getAlerteCoordonnees(ALERTEID).subscribe(res3=>{
     let coords = res3[res3.length-1];
-  
 
     this.plt.ready().then(() => {
       // this.loadHistoricRoutes();
-
       let mapOptions = {
         zoom: 13,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -477,7 +474,6 @@ ionViewDidLoad() {
       this.map.setZoom(12);
 
       let marker1 = new google.maps.Marker({ map : this.map, position: latLng})
-
     });
   },er=>{console.log(er);});
 }

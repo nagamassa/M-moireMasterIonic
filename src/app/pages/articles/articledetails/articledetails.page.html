@@ -1,0 +1,113 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="{{backPage}}"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Détails de l'article</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true">
+  <div [hidden]="!isGestionnaire">
+    <ion-button (click)="anulerArticle(articleDetails)" color = "primary" expand="block"> ANULER ARTICLE</ion-button>
+  </div>
+
+  <ion-list>
+    <ion-card [hidden]="!isAuteur">
+      <ion-img src="{{auteur?.photo}}"></ion-img>
+      <ion-card-header>
+        <ion-item>
+          <ion-label> Auteur </ion-label>
+        </ion-item><br>
+        <ion-card-subtitle> alias {{auteur?.alias}} </ion-card-subtitle>
+      </ion-card-header>
+    </ion-card>
+    <ion-card [hidden]="isAuteur"><ion-item><ion-label> Pas d'infos sur la victime' </ion-label></ion-item></ion-card>
+    
+    
+    <ion-card>
+      <ion-card-header>
+        <ion-item>
+          <ion-label> Article </ion-label>
+        </ion-item><br>
+        <ion-card-subtitle> N°{{articleDetails?.id}} {{articleDetails?.titre}} </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content class="desc">
+        <p><b>localite: </b> {{articleLocalite?.region + ": "+ articleLocalite?.adresse}} </p>
+        <p><b>type: </b>  {{articleDetails?.type}} </p>
+        <p><b>situation :</b>  {{articleDetails?.situation}} </p>
+        <p><b>statut :</b>  {{articleDetails?.statut}} </p>
+        <p><b>lienPosteur:</b>  {{articleDetails?.lienPosteur}} </p>
+        <p><b>dateArticle :</b>  {{articleDetails?.dateArticle | date}} à {{articleDetails?.dateArticle | date:'H:mm:ss'}} </p>
+        </ion-card-content>
+    </ion-card>
+
+    <ion-card class="message">
+      <ion-card-content>
+          <div class="lab">  
+            <ion-card button>      
+              <ion-card-content class="desc">
+                <pre>{{ articleDetails?.details }}</pre>
+              </ion-card-content> 
+              <div [hidden]="!isGestionnaire" >
+                <ion-button (click)="killPiece(pc)" color = "danger"> supprimer</ion-button>
+              </div>          
+            </ion-card>
+          </div>
+      </ion-card-content>
+    </ion-card>
+    
+    <ion-card [hidden]="!isPieces" class="message">
+      <ion-card-header>
+        <ion-item>
+          <ion-label> Liste des Pieces </ion-label>
+        </ion-item>
+      </ion-card-header>
+      <ion-card-content>
+          <div class="lab" *ngFor="let pc of pieces">  
+            <ion-card button  (click)="openFile(pc)">
+              <ion-card-title class="desc">{{pc?.titre}}</ion-card-title>        
+                <div [ngSwitch]="pc.type">
+                  <div *ngSwitchCase = "'Audio'">
+                    <ion-img src="{{urlaudio}}" alt="{{pc.type}}"></ion-img>                                
+                  </div>        
+                  <div *ngSwitchCase = "'Vidéo'">
+                    <ion-img src="{{urlvideo}}" alt="{{pc.type}}"></ion-img>
+                  </div>        
+                  <div *ngSwitchCase = "'Photo'">
+                    <ion-img src="{{base+pc.piece}}" alt="{{pc.type}}"></ion-img>
+                  </div>
+                </div> 
+              <ion-item color="primary">
+              <p>{{pc.titre }}</p>
+              <p>{{pc.datePiece | date}} à {{pc.datePiece | date:'H:mm:ss' }}</p>
+              </ion-item>
+              <div [hidden]="!isGestionnaire" >
+                <ion-button (click)="killPiece(pc)" color = "danger"> supprimer</ion-button>
+              </div>          
+            </ion-card>
+          </div>
+      </ion-card-content>
+    </ion-card>  
+    <ion-card [hidden]="isPieces"><ion-item><ion-label> Pas de pieces </ion-label></ion-item></ion-card>
+
+    <ion-card [hidden]="!isAgencesFollower">
+      <ion-card-header>
+        <ion-item>
+          <ion-label> Agences followers </ion-label>
+        </ion-item>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item class="lab" *ngFor="let af of agencesFollower; let i = index">
+            <ion-label>{{af.agence?.nom}} <br>Adresse: {{af.localite?.region +": "+af.localite?.adresse}} </ion-label>
+            <div [hidden]="!isGestionnaire"><ion-fab horizontal="end" vertical="bottom" slot=""><ion-fab-button (click)="killAgenceFollower(af.agence)" color="danger" style="margin: 0px; margin-right: 0px; width: 25px; height: 25px; line-height: 25px;"><ion-icon name="close-circle"></ion-icon></ion-fab-button></ion-fab></div>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+    <ion-card [hidden]="isAgencesFollower"><ion-item><ion-label> Pas d'agences followers </ion-label></ion-item></ion-card>
+    
+  </ion-list>
+
+</ion-content>

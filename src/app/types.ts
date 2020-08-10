@@ -45,3 +45,15 @@ export interface Suivi_Alerte_Agence {
 export interface Coordonnees {
     id: number; alerte: number; dateCoordonnees: string; longitude: number; latitude: number;
 }
+
+export interface Article {
+    id: number; localite?: number; auteur?: number; type?: string; situation?: string; statut?: string; lienPosteur?: string; titre?: string; details?: string; etat?: string; dateArticle?: string;
+}
+
+export interface Suivi_Article_Agence {
+    id: number; article?: number; agence?: number; statut?: string; raison?: string; datePublication?: any;
+}
+
+export interface Agence {
+    id: number; localite?: number; coordonnees?: number; type?: string; nom?: string; phone?: number; email?: string;
+}

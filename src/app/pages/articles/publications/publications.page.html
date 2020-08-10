@@ -1,9 +1,55 @@
-<ion-header>
+<ion-header [translucent]="false">
   <ion-toolbar>
-    <ion-title>publications</ion-title>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Publications</ion-title>
+  </ion-toolbar>  
+  <ion-toolbar>
+    <ion-searchbar></ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-
+  <!--  -->
+  <ion-toolbar>
+    <ion-segment value="follower">
+      <ion-segment-button (click)="seeMines()" value="follower"> Mes postes</ion-segment-button>
+      <ion-segment-button (click)="seeOthers()" value="groupFollower"> Autres postes</ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>          
+  <!--  -->
+  <ion-list>
+    <div [hidden]="!isMines">
+      <ion-list-header  color="danger">
+        <h5>Mes articles</h5>
+      </ion-list-header>
+      <ion-card button *ngFor="let elem of (myPublications)">
+        <ion-item>
+          <ion-icon name="warning" color="danger" slot="start"></ion-icon>
+          <ion-label>ID: {{elem.article.id}} <br> {{elem.user.alias}} <br> {{elem.article?.titre}} </ion-label>
+          <ion-button (click)="articleDetails(elem.article)" fill="outline" slot="end"> Plus </ion-button>
+        </ion-item>    
+        <ion-card-content>
+          Article {{elem.article?.statut}} en cours depuis {{elem.article.dateArticle | date}} à {{elem.article.dateArticle | date:'H:mm:ss' }}
+        </ion-card-content>
+      </ion-card>
+    </div>
+    <br>
+    <div [hidden]="!isOthers">
+      <ion-list-header color="danger">
+        <h5 class="center">Autres articles</h5>
+      </ion-list-header>
+      <ion-card button *ngFor="let elem of otherPublications">
+        <ion-item>
+          <ion-icon name="warning" color="danger" slot="start"></ion-icon>
+          <ion-label>ID: {{elem.article.id}} <br> {{elem.user.alias}} <br> {{elem.article?.titre}} </ion-label>
+          <ion-button (click)="articleDetails(elem.article)" fill="outline" slot="end"> Plus </ion-button>
+        </ion-item>    
+        <ion-card-content>
+          Article {{elem.article?.statut}} en cours depuis {{elem.article.dateArticle | date}} à {{elem.article.dateArticle | date:'H:mm:ss' }}
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </ion-list>
 </ion-content>

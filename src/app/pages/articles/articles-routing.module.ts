@@ -19,6 +19,10 @@ const routes: Routes = [
       {
         path: 'postarticle',
         loadChildren: () => import('./postarticle/postarticle.module').then( m => m.PostarticlePageModule)
+      },
+      {
+        path: 'articledetails/:id',
+        loadChildren: () => import('./articledetails/articledetails.module').then( m => m.ArticledetailsPageModule)
       }
     ]
   },

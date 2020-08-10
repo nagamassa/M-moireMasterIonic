@@ -168,7 +168,7 @@
     <ion-card [hidden]="isAgencesFollower"><ion-item><ion-label> Pas d'agences followers </ion-label></ion-item></ion-card>
   </div>
 
-  <ion-card class="message">
+  <ion-card [hidden]="!isPieces"  class="message">
     <ion-card-header>
       <ion-item>
         <ion-label> Liste des messages </ion-label>

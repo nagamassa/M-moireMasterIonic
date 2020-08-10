@@ -6,7 +6,7 @@ import { headersToString } from 'selenium-webdriver/http';
 import { StorageService } from './storage.service';
 import { AuthConstants } from '../config/auth-constants';
 import { catchError, tap, map } from 'rxjs/operators';
-import { Alerte, Utilisateur, Coordonnees, PieceJointe, Suivi_Alerte_Group, Suivi_Alerte_Localite, Suivi_Alerte_Agence, Suivi_Alerte_Perso, Groupe, Membre, Localite } from '../types';
+import { Alerte, Utilisateur, Coordonnees, PieceJointe, Suivi_Alerte_Group, Suivi_Alerte_Localite, Suivi_Alerte_Agence, Suivi_Alerte_Perso, Groupe, Membre, Localite, Article, Suivi_Article_Agence, Agence } from '../types';
 
 
 @Injectable({
@@ -292,16 +292,60 @@ killAlerte(serviceName: string, data: Alerte) {
   return this.http.delete<any>(`${url}${data.id}/`, options);
 }
 
-
-// =======================================================
-
-
 killPiece(serviceName: string) {  
   const headers = new HttpHeaders({'Content-Type': 'application/json',});
   const options = { headers: headers, withCredintials: false };
   const url = environment.apiUrl +'/'+ serviceName;
   return this.http.delete<any>(`${url}`, options);
 }
+
+allPublication(serviceName: string) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Article[]>(`${url}`, options);
+}
+
+getArticle(serviceName: string, id: any) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Article>(`${url}${id}/`, options);
+}
+
+getArticlePieces(serviceName: string, id: any) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<PieceJointe[]>(`${url} ${id}/pieces/`, options);
+}
+
+getArticleAgences(serviceName: string, id: any) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Suivi_Article_Agence[]>(`${url} ${id}/suivi_agences/`, options);
+}
+
+getArticleLocalite(serviceName: string, id: any) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Localite>(`${url} ${id}/`, options);
+}
+
+
+// =======================================================
+
+
+
+getAgenceData(serviceName: string, id: any) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Agence>(`${url} ${id}/`, options);
+}
+
 // =====================================================
 
 getAlerte(serviceName: string, id: any) {  
