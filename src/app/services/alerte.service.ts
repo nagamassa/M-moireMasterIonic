@@ -191,6 +191,10 @@ export class AlerteService {
     return this.httpService.getAlerteFollower('wallu/alertes/', postData);
   }
 
+  getAllAlerteCoordonnees(): Observable<Coordonnees[]>{
+    return this.httpService.getAllAlerteCoordonnees('wallu/alertes/all_locations/');
+  }
+
 
 
 

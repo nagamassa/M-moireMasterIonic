@@ -1,15 +1,23 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="{{backPage}}"></ion-back-button>
+      <ion-back-button (click)="backClick()" defaultHref="{{backPage}}"></ion-back-button>
     </ion-buttons>
     <ion-title>Détails de l'article</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content fullscreen="true">
+  <div [hidden]="!isSent">
+    <ion-item>
+      <ion-button style="height: 80%; width: 100%;" expand="block" (click)="anulerArticle()" color = "danger"> ANULER ARTICLE</ion-button>
+    </ion-item>
+  </div>
   <div [hidden]="!isGestionnaire">
-    <ion-button (click)="anulerArticle(articleDetails)" color = "primary" expand="block"> ANULER ARTICLE</ion-button>
+    <ion-item>
+      <ion-button style="width: 50%; height: 80%;" (click)="anulerArticle()" color = "danger"> ANULER ARTICLE</ion-button>
+      <ion-button style="width: 50%; height: 80%;" (click)="LancerArticle()" color = "primary"> POSTER ARTICLE</ion-button>
+    </ion-item>
   </div>
 
   <ion-list>
@@ -22,9 +30,8 @@
         <ion-card-subtitle> alias {{auteur?.alias}} </ion-card-subtitle>
       </ion-card-header>
     </ion-card>
-    <ion-card [hidden]="isAuteur"><ion-item><ion-label> Pas d'infos sur la victime' </ion-label></ion-item></ion-card>
-    
-    
+    <ion-card [hidden]="isAuteur"><ion-item><ion-label> Pas d'infos sur la victime </ion-label></ion-item></ion-card>
+       
     <ion-card>
       <ion-card-header>
         <ion-item>
@@ -33,25 +40,72 @@
         <ion-card-subtitle> N°{{articleDetails?.id}} {{articleDetails?.titre}} </ion-card-subtitle>
       </ion-card-header>
       <ion-card-content class="desc">
-        <p><b>localite: </b> {{articleLocalite?.region + ": "+ articleLocalite?.adresse}} </p>
-        <p><b>type: </b>  {{articleDetails?.type}} </p>
-        <p><b>situation :</b>  {{articleDetails?.situation}} </p>
-        <p><b>statut :</b>  {{articleDetails?.statut}} </p>
-        <p><b>lienPosteur:</b>  {{articleDetails?.lienPosteur}} </p>
-        <p><b>dateArticle :</b>  {{articleDetails?.dateArticle | date}} à {{articleDetails?.dateArticle | date:'H:mm:ss'}} </p>
-        </ion-card-content>
+        <div [hidden]="isGestionnaire" >
+          <p><b>localite: </b> {{articleLocalite?.region + ": "+ articleLocalite?.adresse}} </p>
+          <p><b>type: </b>  {{articleDetails?.type}} </p>
+          <p><b>situation: </b>  {{articleDetails?.situation}} </p>
+          <p><b>statut: </b>  {{articleDetails?.statut}} </p>
+          <p><b>lienPosteur: </b>  {{articleDetails?.lienPosteur}} </p>
+          <p><b>dateArticle: </b>  {{articleDetails?.dateArticle | date}} à {{articleDetails?.dateArticle | date:'H:mm:ss'}} </p>
+        </div>
+        <div [hidden]="!isGestionnaire" >
+          <div [hidden]="isSeeArticleInfos" >
+            <!--  -->
+            Titre <ion-input type="text"  [(ngModel)]="articleDetails.titre" ></ion-input>
+            Locaité <ion-select placeholder="Operateur" [(ngModel)]="articleDetails.localite">
+              <div *ngFor="let l of selectedLocalite; let i = index">
+                <ion-select-option value="{{l.realID}}">{{l?.region + ' ' + l?.adresse}}</ion-select-option>
+              </div>
+            </ion-select>
+            Type <ion-select placeholder="Operateur" [(ngModel)]="articleDetails.type">
+              <ion-select-option value="Recherché">Recherché</ion-select-option><ion-select-option value="Fugitif">Fugitif</ion-select-option><ion-select-option value="Possession illégale d'arme">Possession illégale d'arme</ion-select-option><ion-select-option value="Fraude">Fraude</ion-select-option><ion-select-option value="Corruption">Corruption</ion-select-option><ion-select-option value="Meurtre">Meurtre</ion-select-option><ion-select-option value="Cambriolage">Cambriolage</ion-select-option><ion-select-option value="Escroquerie">Escroquerie</ion-select-option><ion-select-option value="Agression">Agression</ion-select-option><ion-select-option value="Braquage">Braquage</ion-select-option><ion-select-option value="Trafic de drogue">Trafic de drogue</ion-select-option><ion-select-option value="Disparition">Disparition</ion-select-option><ion-select-option value="Vol">Vol</ion-select-option><ion-select-option value="Enlèvement">Enlèvement</ion-select-option><ion-select-option value="Viol">Viol</ion-select-option><ion-select-option value="Autre">Autre</ion-select-option>
+            </ion-select>
+            Situation <ion-select placeholder="Operateur" [(ngModel)]="articleDetails.situation">
+              <ion-select-option value="Résolue">Résolue</ion-select-option>
+              <ion-select-option value="Non résolu">Non résolu</ion-select-option>
+            </ion-select>
+            Statut <ion-select placeholder="Operateur" [(ngModel)]="articleDetails.statut">
+              <ion-select-option value="Anonyme">Anonyme</ion-select-option>
+              <ion-select-option value="Public">Public</ion-select-option>
+            </ion-select>
+            Lien Posteur <ion-select placeholder="Operateur" [(ngModel)]="articleDetails.lienPosteur">
+              <ion-select-option value="Victime">Victime</ion-select-option><ion-select-option value="Témoin">Témoin</ion-select-option><ion-select-option value="Voisin">Voisin</ion-select-option><ion-select-option value="Policier">Policier</ion-select-option><ion-select-option value="Gendarme">Gendarme</ion-select-option><ion-select-option value="Sapeur-pompier">Sapeur-pompier</ion-select-option><ion-select-option value="Autre">Autre</ion-select-option>
+            </ion-select>
+            <!--  -->
+            <ion-button expand="block" (click)="chargerArticle(articleDetails)" color = "success"> Charger les modifs </ion-button>
+          </div>
+          <div [hidden]="!isSeeArticleInfos" >
+            <p><b>localite: </b> {{articleLocalite?.region + ": "+ articleLocalite?.adresse}} </p>
+            <p><b>type: </b>  {{articleDetails?.type}} </p>
+            <p><b>situation: </b>  {{articleDetails?.situation}} </p>
+            <p><b>statut: </b>  {{articleDetails?.statut}} </p>
+            <p><b>lienPosteur: </b>  {{articleDetails?.lienPosteur}} </p>
+            <p><b>dateArticle: </b>  {{articleDetails?.dateArticle | date}} à {{articleDetails?.dateArticle | date:'H:mm:ss'}} </p>
+            <ion-button expand="block" (click)="seeInfosArticleArea()" color = "primary"> Modifier </ion-button>
+          </div>
+        </div>
+      </ion-card-content>
     </ion-card>
 
     <ion-card class="message">
       <ion-card-content>
           <div class="lab">  
-            <ion-card button>      
+            <ion-card>      
               <ion-card-content class="desc">
-                <pre>{{ articleDetails?.details }}</pre>
+                <div [hidden]="isGestionnaire" >
+                  <pre>{{ articleDetails?.details }}</pre>
+                </div>
+                <div [hidden]="!isGestionnaire" >
+                  <div [hidden]="isSeeDetails" >
+                    <ion-textarea rows = "10" [(ngModel)]="articleDetails.details"></ion-textarea>
+                    <ion-button expand="block" (click)="chargerArticle(articleDetails)" color = "success"> Charger les modifs </ion-button>
+                  </div>
+                  <div [hidden]="!isSeeDetails" >
+                    <pre>{{ articleDetails?.details }}</pre>
+                    <ion-button expand="block" (click)="seeDeatilsArea()" color = "primary"> Modifier </ion-button>
+                  </div>
+                </div>
               </ion-card-content> 
-              <div [hidden]="!isGestionnaire" >
-                <ion-button (click)="killPiece(pc)" color = "danger"> supprimer</ion-button>
-              </div>          
             </ion-card>
           </div>
       </ion-card-content>
@@ -64,23 +118,34 @@
         </ion-item>
       </ion-card-header>
       <ion-card-content>
-          <div class="lab" *ngFor="let pc of pieces">  
-            <ion-card button  (click)="openFile(pc)">
-              <ion-card-title class="desc">{{pc?.titre}}</ion-card-title>        
-                <div [ngSwitch]="pc.type">
-                  <div *ngSwitchCase = "'Audio'">
-                    <ion-img src="{{urlaudio}}" alt="{{pc.type}}"></ion-img>                                
-                  </div>        
-                  <div *ngSwitchCase = "'Vidéo'">
-                    <ion-img src="{{urlvideo}}" alt="{{pc.type}}"></ion-img>
-                  </div>        
-                  <div *ngSwitchCase = "'Photo'">
-                    <ion-img src="{{base+pc.piece}}" alt="{{pc.type}}"></ion-img>
+          <div class="lab" *ngFor="let pc of pieces"> 
+            <ion-card>
+              <ion-card-title class="desc">
+                <!--  -->
+                <div [hidden]="!isGestionnaire" >
+                  Changer le titre ici
+                  <ion-item>                    
+                    <ion-input style="height: 75% ; border: 1px blue solid; border-radius: 10px;" placeholder="Changer le titre" type="text"  [(ngModel)]="newTitre" ></ion-input>
+                    <ion-button style="width: 30%;height: 75%; border-radius: 10px;" (click)="chargerPiece(pc)" color = "primary"> Appliquer</ion-button>
+                  </ion-item>
                   </div>
-                </div> 
-              <ion-item color="primary">
-              <p>{{pc.titre }}</p>
-              <p>{{pc.datePiece | date}} à {{pc.datePiece | date:'H:mm:ss' }}</p>
+                <!--  --> 
+              </ion-card-title>
+               
+              <div button  (click)="openFile(pc)" [ngSwitch]="pc.type">
+                <p style="font-size: 100%;">{{pc?.titre}}</p>
+                <div *ngSwitchCase = "'Audio'">
+                  <ion-img src="{{urlaudio}}" alt="{{pc.type}}"></ion-img>                                
+                </div>        
+                <div *ngSwitchCase = "'Vidéo'">
+                  <ion-img src="{{urlvideo}}" alt="{{pc.type}}"></ion-img>
+                </div>        
+                <div *ngSwitchCase = "'Photo'">
+                  <ion-img src="{{base+pc.piece}}" alt="{{pc.type}}"></ion-img>
+                </div>
+              </div> 
+              <ion-item color="primary">   
+                <p>{{pc.datePiece | date}} à {{pc.datePiece | date:'H:mm:ss' }}</p>              
               </ion-item>
               <div [hidden]="!isGestionnaire" >
                 <ion-button (click)="killPiece(pc)" color = "danger"> supprimer</ion-button>
@@ -91,17 +156,29 @@
     </ion-card>  
     <ion-card [hidden]="isPieces"><ion-item><ion-label> Pas de pieces </ion-label></ion-item></ion-card>
 
-    <ion-card [hidden]="!isAgencesFollower">
+    <ion-card [hidden]="!isAgencesFollower" >
       <ion-card-header>
-        <ion-item>
-          <ion-label> Agences followers </ion-label>
+        <ion-item color="primary" >
+          <ion-label style="color:white; font-size: 100%;"> Agences followers </ion-label>
         </ion-item>
       </ion-card-header>
       <ion-card-content>
         <ion-list>
           <ion-item class="lab" *ngFor="let af of agencesFollower; let i = index">
-            <ion-label>{{af.agence?.nom}} <br>Adresse: {{af.localite?.region +": "+af.localite?.adresse}} </ion-label>
-            <div [hidden]="!isGestionnaire"><ion-fab horizontal="end" vertical="bottom" slot=""><ion-fab-button (click)="killAgenceFollower(af.agence)" color="danger" style="margin: 0px; margin-right: 0px; width: 25px; height: 25px; line-height: 25px;"><ion-icon name="close-circle"></ion-icon></ion-fab-button></ion-fab></div>
+            <ion-label>{{af.agence?.nom}} <br> <b>Adresse:</b> {{af.localite?.region +": "+af.localite?.adresse}} <br> <b>Statut:</b> {{af.suivi_agence?.statut}}
+              <div [hidden]="!isGestionnaire">
+                <div [hidden]="!isRejet">
+                  <div [ngSwitch]="af.suivi_agence?.statut">
+                    <div *ngSwitchCase = "'Rejeté'">
+                      <pre style="text-align: left; white-space: pre-wrap; white-space: -moz-pre-wrap; white-space: -pre-wrap;white-space: -o-pre-wrap; word-wrap: break-word; font-size: 90%; font-family: Arial, Helvetica, sans-serif;margin-top: 0px; margin-bottom: 0px;">
+<b>Raison:</b> {{af.suivi_agence?.raison}} sfvuio zifuui zruiuigzr
+                      </pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ion-label>
+            <div [hidden]="!isGestionnaire"><ion-fab horizontal="end" vertical="bottom" slot=""><ion-fab-button (click)="killAgenceFollower(suiviAgences[i])" color="danger" style="margin: 0px; margin-right: 0px; width: 25px; height: 25px; line-height: 25px;"><ion-icon name="close-circle"></ion-icon></ion-fab-button></ion-fab></div>
           </ion-item>
         </ion-list>
       </ion-card-content>
@@ -111,3 +188,13 @@
   </ion-list>
 
 </ion-content>
+
+<!-- Bouton ajout piece -->
+<div [hidden]="!isGestionnaire">
+  <ion-fab horizontal="end" vertical="bottom" slot="fixed">
+    <ion-fab-button (click)="addPieceOrAgence()" color="primary" style="margin: 13px; margin-right: 0px; width: 40px; height: 40px; line-height: 40px;">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</div>
+<!--  -->

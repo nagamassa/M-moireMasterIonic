@@ -3,12 +3,21 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Mes statistiques</ion-title>
+    <ion-title>Situation geographique</ion-title>
+  </ion-toolbar>  
+  <ion-toolbar>
+    <ion-searchbar></ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
 
 <ion-content >
-Voici les statistiques de mes alertes
+<!-- ========================================================================= -->
+<ion-card>
+  <ion-card-header></ion-card-header>
+  <div #map id="map"></div>
+  <ion-card-content></ion-card-content>
+</ion-card>
+<!-- ========================================================================= -->
 </ion-content>
 

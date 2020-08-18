@@ -26,7 +26,7 @@
       </ion-list-header>
       <ion-card button *ngFor="let elem of (myPublications)">
         <ion-item>
-          <ion-icon name="warning" color="danger" slot="start"></ion-icon>
+          <ion-icon name="newspaper" color="primary" slot="start"></ion-icon>
           <ion-label>ID: {{elem.article.id}} <br> {{elem.user.alias}} <br> {{elem.article?.titre}} </ion-label>
           <ion-button (click)="articleDetails(elem.article)" fill="outline" slot="end"> Plus </ion-button>
         </ion-item>    
@@ -42,7 +42,7 @@
       </ion-list-header>
       <ion-card button *ngFor="let elem of otherPublications">
         <ion-item>
-          <ion-icon name="warning" color="danger" slot="start"></ion-icon>
+          <ion-icon name="newspaper" color="primary" slot="start"></ion-icon>
           <ion-label>ID: {{elem.article.id}} <br> {{elem.user.alias}} <br> {{elem.article?.titre}} </ion-label>
           <ion-button (click)="articleDetails(elem.article)" fill="outline" slot="end"> Plus </ion-button>
         </ion-item>    

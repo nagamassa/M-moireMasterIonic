@@ -81,7 +81,6 @@ export class NewlocalitefollowersPage implements OnInit {
                 notLinkedUser = 0;
               }
             },er=>{console.log(er);});
-            alert(this.backPage)
           },er=>{console.log("Erreur ajout de cible localite: ",JSON.stringify(er));});
       } else {console.log(cibles[i].nom," erreur de ciblage");}
         notLinked = 0;

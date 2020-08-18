@@ -7,6 +7,8 @@ import { IonicModule } from '@ionic/angular';
 import { StatalertePageRoutingModule } from './statalerte-routing.module';
 
 import { StatalertePage } from './statalerte.page';
+import { FilePath } from '@ionic-native/file-path/ngx';
+import { FileChooser } from '@ionic-native/file-chooser/ngx';
 
 @NgModule({
   imports: [
@@ -14,6 +16,10 @@ import { StatalertePage } from './statalerte.page';
     FormsModule,
     IonicModule,
     StatalertePageRoutingModule
+  ],
+  providers: [
+    FilePath,
+    FileChooser,
   ],
   declarations: [StatalertePage]
 })

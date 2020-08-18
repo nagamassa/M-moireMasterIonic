@@ -4,7 +4,7 @@ import { environment } from 'src/environments/environment';
 import { AlerteService } from 'src/app/services/alerte.service';
 import { AuthConstants } from 'src/app/config/auth-constants';
 import { StorageService } from 'src/app/services/storage.service';
-import { Alerte, Utilisateur, Coordonnees, PieceJointe, Suivi_Alerte_Group, Suivi_Alerte_Localite, Suivi_Alerte_Agence, Suivi_Alerte_Perso, Groupe, Localite, Article, Suivi_Article_Agence } from 'src/app/types';
+import { Alerte, Utilisateur, Coordonnees, PieceJointe, Suivi_Alerte_Group, Suivi_Alerte_Localite, Suivi_Alerte_Agence, Suivi_Alerte_Perso, Groupe, Localite, Article, Suivi_Article_Agence, Agence } from 'src/app/types';
 import { Camera} from '@ionic-native/Camera/ngx';
 import { MediaCapture, MediaFile, CaptureError, CaptureImageOptions } from '@ionic-native/media-capture/ngx';
 import { StreamingMedia} from '@ionic-native/streaming-media/ngx';
@@ -61,15 +61,19 @@ export class ArticledetailsPage implements OnInit {
   url= '../../../assets/map.png'; urlaudio= '../../../assets/audio.png'; urlvideo= '../../../assets/video.png';
   base:string = environment.apiUrl;
 
-  backPage:string = ""; from:string = ""; type: string = "";
-  isPublication:boolean = false;  isGestionnaire:boolean = false;  isSent:boolean = false;
+  newTitre:string="";
+  backPage:string = "/folder/articles/options/prearticle"; from:string = "prearticle";  type: string = "";
+  isSeeDetails: Boolean = true; isSeeArticleInfos: Boolean = true;
+  isPublication:boolean = false;  isGestionnaire:boolean = false;  isSent:boolean = false;  isRejet: boolean = false;
 
-  articleDetails : Article;                     isArticleDetails: boolean = false;
+  articleDetails : any = {};                    isArticleDetails: boolean = false;
   auteur: Utilisateur;                          isAuteur: boolean = false;
   pieces: PieceJointe[];                        isPieces: boolean = false;
-  agencesFollower: any[] = [];;       isAgencesFollower: boolean = false;  isAgencesView: boolean = false;
-  articleLocalite: Localite;
-
+  agencesFollower: any[] = [];       isAgencesFollower: boolean = false;  isAgencesView: boolean = false;
+  articleLocalite: Localite;  suiviAgences: Suivi_Article_Agence[] = [];
+  
+  localites: Localite[] = []; selectedLocalite: any[] = [];
+  
 
   constructor(private authService: AuthService, public alerteService : AlerteService, public piecesService : PiecesService,
     public storageService : StorageService, private router: Router, private activatedRoute: ActivatedRoute,
@@ -111,6 +115,7 @@ export class ArticledetailsPage implements OnInit {
     const ARTICLEID = this.activatedRoute.snapshot.params["id"];      
     this.articleService.getArticle(ARTICLEID).subscribe(res1=>{
       this.articleDetails=res1;  if(this.articleDetails){this.isArticleDetails = true;}
+      if(this.articleDetails.etat == "Rejeté"){this.isRejet = true;}
       this.authService.getCurrenttUser(res1.auteur).subscribe((res2:any) => {
         this.auteur = res2; this.auteur.photo = environment.apiUrl + this.auteur.photo; this.isAuteur = true;
         if(this.auteur){this.isAuteur = true;}
@@ -118,23 +123,68 @@ export class ArticledetailsPage implements OnInit {
           this.pieces = res3; 
           let i=0; for(let elem of this.pieces){ i++;} if(i){this.isPieces = true;}
           this.articleService.getArticleAgences(ARTICLEID).subscribe(res4=>{
-            let i=0;
+            let i=0; this.suiviAgences = res4; this.agencesFollower = [];
             for(let elem of res4){ 
               i++;
               this.articleService.getAgenceData(elem.agence).subscribe(res5=>{
                 this.articleService.getAgenceLocalite(res5.localite).subscribe(res6=>{
-                  this.agencesFollower.push({agence:res5, localite: res6});
+                  this.agencesFollower.push({suivi_agence: elem, agence:res5, localite: res6});
                   console.log(JSON.stringify(this.agencesFollower));
                 },er=>{console.log(er);});
               },er=>{console.log(er);});
             } if(i){this.isAgencesFollower = true;}
-            this.articleService.getArticleLocalite(res1.localite).subscribe(res7=>{
-              this.articleLocalite = res7; 
-            },er=>{console.log(er);});
+            if(res1.localite != null){
+              this.articleService.getArticleLocalite(res1.localite).subscribe(res7=>{
+                this.articleLocalite = res7; 
+              },er=>{console.log(er);});
+            }
+            // 
+            this.alerteService.allLocalites().subscribe(res2=>{
+              this.localites = res2;  this.selectedLocalite = [];
+              for (let i of this.localites) {this.selectedLocalite.push({realID:i.id, id:this.localites.length-1, slt:'Faux', region:i.region, adresse:i.adresse});}
+            },er=>{console.log(er); });
+            //
           },er=>{console.log(er);});
         },er=>{console.log(er);});
       },er=>{console.log(er);});      
     },er=>{console.log(er);});
+  }
+
+  backClick(){
+    if(this.backPage == "" || this.backPage == null || this.backPage == undefined){
+      this.router.navigate(['/folder/articles/options/prearticle']);    
+    }
+  }
+
+  seeDeatilsArea(){   
+    this.isSeeDetails = false;
+  }
+
+  seeInfosArticleArea(){   
+    this.isSeeArticleInfos = false;
+  }
+
+  chargerPiece(pc: PieceJointe){
+    pc.titre = this.newTitre;
+    this.articleService.pieceLoadCanges(pc).subscribe(res3=>{
+      console.log(JSON.stringify(pc)," deleted successfully");
+    },er=>{console.log(er); });
+  }
+
+  chargerArticle(){
+    this.articleService.articleLoadeChanges(this.articleDetails).subscribe(res=>{
+      if(this.articleDetails.localite != null){
+        this.articleService.getArticleLocalite(this.articleDetails.localite).subscribe(res7=>{
+          this.articleLocalite = res7; 
+        },er=>{console.log(er);});
+      }
+      console.log("Changement effectués avec succés");
+    },er=>{console.log(er);});
+    this.isSeeDetails = true; this.isSeeArticleInfos = true;
+  }
+
+  addPieceOrAgence(){
+     this.presentActionSheet();
   }
 
   // Début des actionsheets
@@ -151,7 +201,7 @@ export class ArticledetailsPage implements OnInit {
         },{ text: 'Mémoire Interne', icon: 'folder-open',
           handler: () => { this.selectAFile() }
         },{ text: 'Agence', icon: 'business', 
-          handler: () => {  }
+          handler: () => { this.newAgenceFollower() }
         },
       ]
     });
@@ -295,6 +345,37 @@ export class ArticledetailsPage implements OnInit {
             }
           });
       },err =>{ console.log(err); throw err; return ""; });
+  }
+
+  newAgenceFollower(){
+    this.router.navigate(['/folder/articles/options/prearticle', this.articleDetails.id,'newarticleagencefollower', {"from": this.from}]);    
+  }
+
+  LancerArticle(){
+    this.articleDetails.etat = "En cours de traitement";
+    this.articleService.articleLoadeChanges(this.articleDetails).subscribe(res=>{
+      console.log("Changement effectués avec succés");
+      this.router.navigate(['/folder/articles/options/articledetails',this.articleDetails.id, {"backPage": "/folder/articles/options/postarticle"}]); 
+    },er=>{console.log(er);});
+  }
+
+  anulerArticle(){
+    this.articleService.killArticle(this.articleDetails).subscribe(res=>{
+      console.log("deleted avec succés");
+      this.router.navigate(['/folder/articles/options/prearticle']); 
+    },er=>{console.log(er);});
+  }
+
+  killAgenceFollower(agenceFollower: Suivi_Article_Agence){  
+    this.articleService.deleteSuiviArticleAgence(agenceFollower).subscribe(res3=>{
+      console.log(JSON.stringify(agenceFollower)," deleted successfully");
+    },er=>{console.log(er); });
+  }
+  
+  killPiece(piece: PieceJointe){  
+    this.articleService.killPiece(piece).subscribe(res3=>{
+      console.log(JSON.stringify(piece)," deleted successfully");
+    },er=>{console.log(er); });
   }
 
 

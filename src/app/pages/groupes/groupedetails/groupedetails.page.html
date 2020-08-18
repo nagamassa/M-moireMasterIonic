@@ -59,8 +59,11 @@
       </div> 
     </ion-item-sliding>             
   </ion-list>
-  <ion-button [hidden]="cantDelete" expand="full" color="danger" (click)="deleteGroupe(groupeDetalis)" >Supprimer le groupe</ion-button>
+  
 </ion-content>
+<ion-tab-bar slot="bottom">
+  <ion-button style="width: 100%;" [hidden]="cantDelete" expand="full" color="danger" (click)="deleteGroupe(groupeDetalis)" >Supprimer le groupe</ion-button>
+</ion-tab-bar>
 
 <ion-fab horizontal="end" vertical="bottom" slot="fixed" [hidden]="isOther">
   <ion-fab-button (click)="goTocontact()" color="primary">

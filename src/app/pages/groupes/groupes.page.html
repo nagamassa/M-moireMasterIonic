@@ -11,36 +11,46 @@
 </ion-header>
 
 <ion-content>
+  <!--  -->
+  <ion-toolbar>
+    <ion-segment value="mines">
+      <ion-segment-button (click)="seeMines()" value="mines"> Mes groupes</ion-segment-button>
+      <ion-segment-button (click)="seeOthers()" value="others"> Autres groupes</ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>          
+  <!--  -->
   <ion-list>
-    <ion-list-header  color="danger">
-      <h5>Mes propres groupes</h5>
-    </ion-list-header>
-    <ion-card button *ngFor="let elem of (MyOwneGroupes)">
-      <ion-item>
-        <ion-note slot="start" color="danger">{{elem.nombreMembre}}</ion-note>
-        <ion-label> {{elem.nom}} </ion-label>
-        <ion-button (click)="myGroupeDetails(elem)" fill="outline" slot="end"> Plus </ion-button>
-      </ion-item>    
-      <ion-card-content>
-        Groupe crée depuis {{elem.dateCreation | date}} à {{elem.dateCreation | date:'H:mm:ss' }}
-      </ion-card-content>
-    </ion-card>
+    <div [hidden]="!isMines">
+      <ion-list-header  color="danger">
+        <h5>Mes propres groupes</h5>
+      </ion-list-header>
+      <ion-card button *ngFor="let elem of (MyOwneGroupes)">
+        <ion-item>
+          <ion-icon name="people-circle" color="primary" slot="start"></ion-icon>
+          <ion-label> {{elem.nom}} </ion-label>
+          <ion-button (click)="myGroupeDetails(elem)" fill="outline" slot="end"> Plus </ion-button>
+        </ion-item>    
+        <ion-card-content>
+          Groupe crée depuis {{elem.dateCreation | date}} à {{elem.dateCreation | date:'H:mm:ss' }}
+        </ion-card-content>
+      </ion-card>
+    </div>
     <br>
-
-    <ion-list-header  color="danger">
-      <h5>Mes groupes associés</h5>
-    </ion-list-header>
-    <ion-card button *ngFor="let elem of (MyLinkGroupes)">
-      <ion-item>
-        <ion-note slot="start" color="danger">{{elem.nombreMembre}}</ion-note>
-        <ion-label> {{elem.nom}} </ion-label>
-        <ion-button (click)="myGroupeDetails(elem)" fill="outline" slot="end"> Plus </ion-button>
-      </ion-item>    
-      <ion-card-content>
-        Groupe crée depuis {{elem.dateCreation | date}} à {{elem.dateCreation | date:'H:mm:ss' }}
-      </ion-card-content>
-    </ion-card>
-
+    <div [hidden]="!isOthers">
+      <ion-list-header  color="danger">
+        <h5>Mes groupes associés</h5>
+      </ion-list-header>
+      <ion-card button *ngFor="let elem of (MyLinkGroupes)">
+        <ion-item>
+          <ion-icon name="people-circle" color="primary" slot="start"></ion-icon>
+          <ion-label> {{elem.nom}} </ion-label>
+          <ion-button (click)="myGroupeDetails(elem)" fill="outline" slot="end"> Plus </ion-button>
+        </ion-item>    
+        <ion-card-content>
+          Groupe crée depuis {{elem.dateCreation | date}} à {{elem.dateCreation | date:'H:mm:ss' }}
+        </ion-card-content>
+      </ion-card>
+    </div>
 
   </ion-list>
 

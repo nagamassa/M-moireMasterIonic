@@ -21,6 +21,7 @@ export class CoursalertePage implements OnInit {
   public mesAlerte : Alerte[] = []; public mesListEnCours : any[] = []; public autreListEnCours : any[] = [];
   suiviAlertePerso: Suivi_Alerte_Perso = {alerte: null, follower: null,
   DateReception: null, DateReponse: null};
+  public isMines:boolean = true; public isOthers:boolean = false;
   backPage:string = "/folder/alertes/options/coursalerte";
 
   constructor(private authService: AuthService, public alerteService : AlerteService,
@@ -65,6 +66,14 @@ export class CoursalertePage implements OnInit {
 
       },er=>{console.log(er); });
     },err => { console.log('erreur getting local data', JSON.stringify(err)); });    
+  }
+
+  seeMines(){
+    this.isMines = true; this.isOthers = false;
+  }
+
+  seeOthers(){
+    this.isMines = false; this.isOthers = true;
   }
 
   myCoursDetails(elem){

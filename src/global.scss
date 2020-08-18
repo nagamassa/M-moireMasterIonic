@@ -58,7 +58,9 @@ ion-header ion-toolbar ion-title ion-label {
 //  CSS pour eviter le cacher le scrollbar des pages
 
 
-
+ion-header > ion-toolbar {
+    margin-bottom: 3%;
+}
 
 
 

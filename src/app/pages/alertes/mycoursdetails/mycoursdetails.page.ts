@@ -131,7 +131,7 @@ async loadData(){
         this.coords = {'latitude': this.coordonnees[this.coordonnees.length-1]?.latitude, 'longitude': this.coordonnees[this.coordonnees.length-1]?.longitude}
         let i=0; for(let elem of this.coordonnees){ i++;} if(i){this.isCoordonnees = true;}
         this.alerteService.getAlertePieces(ALERTEID).subscribe(res4=>{
-          this.pieces = res4; 
+          this.pieces = []; this.pieces = res4; 
           let i=0; for(let elem of this.pieces){ i++;} if(i){this.isPieces = true;}             
           this.alerteService.getAlerteGroups(ALERTEID).subscribe(res5=>{
             this.groupFollower = res5; 

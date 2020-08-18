@@ -299,6 +299,13 @@ killPiece(serviceName: string) {
   return this.http.delete<any>(`${url}`, options);
 }
 
+pieceLoadCanges(serviceName: string, postData:PieceJointe) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.put<any>(`${url}`, postData ,options);
+}
+
 allPublication(serviceName: string) {  
   const headers = new HttpHeaders({'Content-Type': 'application/json',});
   const options = { headers: headers, withCredintials: false };
@@ -334,16 +341,77 @@ getArticleLocalite(serviceName: string, id: any) {
   return this.http.get<Localite>(`${url} ${id}/`, options);
 }
 
-
-// =======================================================
-
-
-
 getAgenceData(serviceName: string, id: any) {  
   const headers = new HttpHeaders({'Content-Type': 'application/json',});
   const options = { headers: headers, withCredintials: false };
   const url = environment.apiUrl +'/'+ serviceName;
   return this.http.get<Agence>(`${url} ${id}/`, options);
+}
+
+allGestionArticles(serviceName: string, id: any) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Article[]>(`${url} ${id}/`, options);
+}
+
+allAgences(serviceName: string) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Agence[]>(`${url}`, options);
+}
+
+ajouterAgenceTarget(serviceName: string, data: Suivi_Article_Agence) {
+  const headers = new HttpHeaders({  });
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.post<Suivi_Article_Agence>(`${url} ${data.article}/suivi_agences/`, data, options);
+}
+
+
+deleteSuiviArticleAgence(serviceName: string, data: Suivi_Article_Agence) {
+  const headers = new HttpHeaders({  });
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.delete<any>(`${url}${data.id}/`, options);
+}
+
+articleLoadeChanges(serviceName: string, data: Article) {
+  const headers = new HttpHeaders({  });
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.put<Article>(`${url} ${data.id}/`, data, options);
+}
+
+killArticle(serviceName: string, data: Article) {
+  const headers = new HttpHeaders({  });
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.delete<any>(`${url}${data.id}/`, options);
+}
+
+programmerArticle(serviceName: string, data: any) {
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});  
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.post(`${url}`, {"auteur": data.id}, options);
+}
+
+allPostedArticles(serviceName: string, id: any) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Article[]>(`${url} ${id}/`, options);
+}
+
+// =======================================================
+
+getAllAlerteCoordonnees(serviceName: string) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Coordonnees[]>(`${url}`, options);
 }
 
 // =====================================================

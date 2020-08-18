@@ -23,6 +23,10 @@ const routes: Routes = [
       {
         path: 'articledetails/:id',
         loadChildren: () => import('./articledetails/articledetails.module').then( m => m.ArticledetailsPageModule)
+      },
+      {
+        path: 'prearticle/:id/newarticleagencefollower',
+        loadChildren: () => import('./newarticleagencefollower/newarticleagencefollower.module').then( m => m.NewarticleagencefollowerPageModule)
       }
     ]
   },

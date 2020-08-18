@@ -14,6 +14,7 @@ export class GroupesPage implements OnInit {
   public mesGroupes : Groupe[] = [];  public MyOwneGroupes : Groupe[] = [];  public MyLinkGroupes : Groupe[] = []; wantAdd: boolean = false;
   newGroupe = {nombreMembre: "1", nom: ""};
   newMembre = {user_member: "0", groupe: "0", isAdmin: "Vrai" , isFondateur: "Vrai"};
+  public isMines:boolean = true; public isOthers:boolean = false;
 
   constructor(private alerteService: AlerteService, public storageService: StorageService, private router: Router, private activatedRoute: ActivatedRoute,) { }
 
@@ -28,6 +29,14 @@ export class GroupesPage implements OnInit {
         this.mesGroupes = res2; this.MyLinkGroupes = this.mesGroupes;        
       },er=>{console.log(er); });
     },err => { console.log('erreur getting local data', JSON.stringify(err)); });
+  }
+
+  seeMines(){
+    this.isMines = true; this.isOthers = false;
+  }
+
+  seeOthers(){
+    this.isMines = false; this.isOthers = true;
   }
 
   myGroupeDetails(elem){

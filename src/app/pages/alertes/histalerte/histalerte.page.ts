@@ -15,6 +15,7 @@ export class HistalertePage implements OnInit {
 
   public mesAlerte : Alerte[] = []; public mesListEnCours : any[] = []; public autreListEnCours : any[] = [];
   backPage:string = "/folder/alertes/options/histalerte";
+  public isMines:boolean = true; public isOthers:boolean = false;
 
   constructor(private authService: AuthService, public alerteService : AlerteService,
     public storageService : StorageService, private router: Router,) { }
@@ -44,6 +45,14 @@ export class HistalertePage implements OnInit {
       },er=>{console.log(er); });
     },err => { console.log('erreur getting local data', JSON.stringify(err)); });
    }
+
+   seeMines(){
+      this.isMines = true; this.isOthers = false;
+    }
+
+    seeOthers(){
+      this.isMines = false; this.isOthers = true;
+    }
 
    myCoursDetails(elem){
     this.storageService.get(AuthConstants.AUTHDATA).then(res =>{

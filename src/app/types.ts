@@ -51,7 +51,7 @@ export interface Article {
 }
 
 export interface Suivi_Article_Agence {
-    id: number; article?: number; agence?: number; statut?: string; raison?: string; datePublication?: any;
+    id?: number; article?: number; agence?: number; statut?: string; raison?: string; datePublication?: any;
 }
 
 export interface Agence {

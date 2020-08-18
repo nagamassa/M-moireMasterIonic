@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="{{backPage2}}"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Liste des agences</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+   <ion-list>
+    <ion-list-header>Nouveaux cibles pour l'article N*{{articleDetalis?.id}} crée depuis {{articleDetalis?.dateArticle | date}} à {{articleDetalis?.dateArticle | date:'H:mm:ss' }} </ion-list-header>
+    <ion-item-sliding *ngFor="let a of allAgences; let i = index">
+      <ion-item (click)="loadSelected(selectedAgence[i])">
+        <ion-label>  <b> {{ a?.nom }} </b> <p> {{ a?.dateCreation}} <br> {{selectedAgence[i].slt}} </p> </ion-label>
+      </ion-item> 
+    </ion-item-sliding> 
+  </ion-list> 
+  
+
+  <ion-fab horizontal="end" vertical="bottom" slot="fixed">
+    <ion-fab-button color="light" (click)="ajouterCible(selectedAgence, articleDetalis)">
+      Ajouter 
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
