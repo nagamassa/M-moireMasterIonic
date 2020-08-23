@@ -19,7 +19,8 @@ import { ArticleService } from 'src/app/services/article.service';
 })
 export class PostarticlePage implements OnInit {
   
-  public mesArticlesPostes : any[] = [];
+  public isTraitement:boolean = true; public isDeno:boolean = false;
+  public mesArticlesPostes : any[] = [];  public mesArticlesDeno : any[] = [];
   backPage:string = "/folder/articles/options/postarticle";
 
   constructor(
@@ -34,7 +35,8 @@ export class PostarticlePage implements OnInit {
                 
         for(let artc of res1){          
           this.authService.getCurrenttUser(artc.auteur).subscribe((cu:any) => {
-            this.mesArticlesPostes.push({article:artc, user: cu});
+            if(artc.denonciation == "Faux"){this.mesArticlesPostes.push({article:artc, user: cu});}
+            else if(artc.denonciation == "Vrai"){this.mesArticlesDeno.push({article:artc, user: cu});}
           });      
         } 
       },er=>{console.log("Erreur getting all articles en postés",er); });
@@ -45,7 +47,13 @@ export class PostarticlePage implements OnInit {
     this.router.navigate(['/folder/articles/options/articledetails',elem.id, {"backPage": this.backPage}]); 
   }
 
+  seeTraitement(){
+    this.isTraitement = true; this.isDeno = false;
+  }
 
+  seeDeno(){
+    this.isTraitement = false; this.isDeno = true;
+  }
 
 
 

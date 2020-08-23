@@ -40,14 +40,14 @@ export interface Suivi_Alerte_Localite {
 }
 
 export interface Suivi_Alerte_Agence {
-    id: number; alerte: number; agence: number; nombreReception: number; nombreReponse: number; dateTransfert?:string;
+    id?: number; alerte?: number; agence?: number; nombreReception?: number; nombreReponse?: number; dateTransfert?:string;
 }
 export interface Coordonnees {
     id: number; alerte: number; dateCoordonnees: string; longitude: number; latitude: number;
 }
 
 export interface Article {
-    id: number; localite?: number; auteur?: number; type?: string; situation?: string; statut?: string; lienPosteur?: string; titre?: string; details?: string; etat?: string; dateArticle?: string;
+    id: number; localite?: number; auteur?: number; type?: string; denonciation?:string; situation?: string; statut?: string; lienPosteur?: string; titre?: string; details?: string; etat?: string; dateArticle?: string;
 }
 
 export interface Suivi_Article_Agence {

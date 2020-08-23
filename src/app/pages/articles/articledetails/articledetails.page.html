@@ -21,7 +21,7 @@
   </div>
 
   <ion-list>
-    <ion-card [hidden]="!isAuteur">
+    <ion-card [hidden]="!isPublic">
       <ion-img src="{{auteur?.photo}}"></ion-img>
       <ion-card-header>
         <ion-item>
@@ -29,8 +29,10 @@
         </ion-item><br>
         <ion-card-subtitle> alias {{auteur?.alias}} </ion-card-subtitle>
       </ion-card-header>
+      <ioni-card-content>
+      </ioni-card-content>
     </ion-card>
-    <ion-card [hidden]="isAuteur"><ion-item><ion-label> Pas d'infos sur la victime </ion-label></ion-item></ion-card>
+    <ion-card [hidden]="isPublic"><ion-item><ion-label> Posteur Anonyme </ion-label></ion-item></ion-card>
        
     <ion-card>
       <ion-card-header>
@@ -43,6 +45,7 @@
         <div [hidden]="isGestionnaire" >
           <p><b>localite: </b> {{articleLocalite?.region + ": "+ articleLocalite?.adresse}} </p>
           <p><b>type: </b>  {{articleDetails?.type}} </p>
+          <p><b>dénoniaction: </b>  {{articleDetails?.denonciation}} </p>
           <p><b>situation: </b>  {{articleDetails?.situation}} </p>
           <p><b>statut: </b>  {{articleDetails?.statut}} </p>
           <p><b>lienPosteur: </b>  {{articleDetails?.lienPosteur}} </p>
@@ -60,6 +63,11 @@
             Type <ion-select placeholder="Operateur" [(ngModel)]="articleDetails.type">
               <ion-select-option value="Recherché">Recherché</ion-select-option><ion-select-option value="Fugitif">Fugitif</ion-select-option><ion-select-option value="Possession illégale d'arme">Possession illégale d'arme</ion-select-option><ion-select-option value="Fraude">Fraude</ion-select-option><ion-select-option value="Corruption">Corruption</ion-select-option><ion-select-option value="Meurtre">Meurtre</ion-select-option><ion-select-option value="Cambriolage">Cambriolage</ion-select-option><ion-select-option value="Escroquerie">Escroquerie</ion-select-option><ion-select-option value="Agression">Agression</ion-select-option><ion-select-option value="Braquage">Braquage</ion-select-option><ion-select-option value="Trafic de drogue">Trafic de drogue</ion-select-option><ion-select-option value="Disparition">Disparition</ion-select-option><ion-select-option value="Vol">Vol</ion-select-option><ion-select-option value="Enlèvement">Enlèvement</ion-select-option><ion-select-option value="Viol">Viol</ion-select-option><ion-select-option value="Autre">Autre</ion-select-option>
             </ion-select>
+            <!--  -->
+            Dénonciation <ion-select placeholder="Operateur" [(ngModel)]="articleDetails.denonciation">
+              <ion-select-option value="Vrai">Vrai</ion-select-option><ion-select-option value="Faux">Faux</ion-select-option>
+            </ion-select>
+            <!--  -->
             Situation <ion-select placeholder="Operateur" [(ngModel)]="articleDetails.situation">
               <ion-select-option value="Résolue">Résolue</ion-select-option>
               <ion-select-option value="Non résolu">Non résolu</ion-select-option>
@@ -77,6 +85,7 @@
           <div [hidden]="!isSeeArticleInfos" >
             <p><b>localite: </b> {{articleLocalite?.region + ": "+ articleLocalite?.adresse}} </p>
             <p><b>type: </b>  {{articleDetails?.type}} </p>
+            <p><b>dénoniaction: </b>  {{articleDetails?.denonciation}} </p>
             <p><b>situation: </b>  {{articleDetails?.situation}} </p>
             <p><b>statut: </b>  {{articleDetails?.statut}} </p>
             <p><b>lienPosteur: </b>  {{articleDetails?.lienPosteur}} </p>
@@ -171,7 +180,7 @@
                   <div [ngSwitch]="af.suivi_agence?.statut">
                     <div *ngSwitchCase = "'Rejeté'">
                       <pre style="text-align: left; white-space: pre-wrap; white-space: -moz-pre-wrap; white-space: -pre-wrap;white-space: -o-pre-wrap; word-wrap: break-word; font-size: 90%; font-family: Arial, Helvetica, sans-serif;margin-top: 0px; margin-bottom: 0px;">
-<b>Raison:</b> {{af.suivi_agence?.raison}} sfvuio zifuui zruiuigzr
+<b>Raison:</b> {{af.suivi_agence?.raison}}
                       </pre>
                     </div>
                   </div>

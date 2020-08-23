@@ -16,6 +16,7 @@ import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
 })
 export class GroupedetailsPage implements OnInit {
 
+  GroupesLength: number = 0;
   groupeDetalis : Groupe;           isGroupeDetalis: boolean = false;
   auteur: Utilisateur;              isAuteur: boolean = false;
   membres: Membre[]=[];             isMembres: boolean = false;
@@ -35,7 +36,7 @@ export class GroupedetailsPage implements OnInit {
       this.alerteService.getGroupeAuteur(GROUPEID).subscribe(res2=>{
         this.auteur = res2; if(this.auteur){this.isAuteur = true;} this.auteur.photo = environment.apiUrl + this.auteur.photo;        
         this.alerteService.getGroupeMembres(GROUPEID).subscribe(res3=>{
-          this.membres = res3; if(this.membres){this.isMembres = true;}          
+          this.membres = res3; if(this.membres){this.isMembres = true;} this.GroupesLength = this.membres.length;
           this.alerteService.getGroupeMembresUsers(GROUPEID).subscribe(res4=>{
             this.userMembers = res4; if(this.userMembers){this.isUserMembers = true;} 
             for(let us of this.userMembers){ us.photo = environment.apiUrl + us.photo;}

@@ -5,11 +5,14 @@
     </ion-buttons>
     <ion-title>Liste de mes groupes</ion-title>
   </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar></ion-searchbar>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content fullscreen>
    <ion-list>
-    <ion-list-header>Nouveaux cibles pour l'alerte N*{{alerteDetalis?.id}} lancée depuis {{alerteDetalis?.dateAlerte | date}} à {{alerteDetalis?.dateAlerte | date:'H:mm:ss' }} </ion-list-header>
+    <ion-list-header color="primary">Nouveaux cibles pour l'alerte N*{{alerteDetalis?.id}} lancée depuis {{alerteDetalis?.dateAlerte | date}} à {{alerteDetalis?.dateAlerte | date:'H:mm:ss' }} </ion-list-header>
     <ion-item-sliding *ngFor="let g of allGroupe; let i = index">
       <ion-item (click)="loadSelected(selectedGroupe[i])">
         <ion-label>  <b> {{ g?.nom }} </b> <p> {{ g?.dateCreation}} <br> {{selectedGroupe[i].slt}} </p> </ion-label>

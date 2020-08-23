@@ -71,6 +71,7 @@ export class ArticledetailsPage implements OnInit {
   pieces: PieceJointe[];                        isPieces: boolean = false;
   agencesFollower: any[] = [];       isAgencesFollower: boolean = false;  isAgencesView: boolean = false;
   articleLocalite: Localite;  suiviAgences: Suivi_Article_Agence[] = [];
+  isPublic:boolean = false;
   
   localites: Localite[] = []; selectedLocalite: any[] = [];
   
@@ -115,7 +116,8 @@ export class ArticledetailsPage implements OnInit {
     const ARTICLEID = this.activatedRoute.snapshot.params["id"];      
     this.articleService.getArticle(ARTICLEID).subscribe(res1=>{
       this.articleDetails=res1;  if(this.articleDetails){this.isArticleDetails = true;}
-      if(this.articleDetails.etat == "Rejeté"){this.isRejet = true;}
+      if(this.articleDetails.etat == "Rejeté"){this.isRejet = true;}  
+      if(this.articleDetails.statut == "Public"){this.isPublic = true;} else if(this.articleDetails.statut == "Anonyme"){this.isPublic = false;}
       this.authService.getCurrenttUser(res1.auteur).subscribe((res2:any) => {
         this.auteur = res2; this.auteur.photo = environment.apiUrl + this.auteur.photo; this.isAuteur = true;
         if(this.auteur){this.isAuteur = true;}
@@ -171,6 +173,11 @@ export class ArticledetailsPage implements OnInit {
     },er=>{console.log(er); });
   }
 
+  // changerStatut(statut:string){
+  //   if(statut == "Anonyme"){ this.isPublic = false; console.log("est public: "+this.isPublic);}
+  //   else if(statut == "Public"){ this.isPublic = true; console.log("est public: "+this.isPublic);}
+  // }
+
   chargerArticle(){
     this.articleService.articleLoadeChanges(this.articleDetails).subscribe(res=>{
       if(this.articleDetails.localite != null){
@@ -180,6 +187,7 @@ export class ArticledetailsPage implements OnInit {
       }
       console.log("Changement effectués avec succés");
     },er=>{console.log(er);});
+    if(this.articleDetails.statut == "Public"){this.isPublic = true;} else if(this.articleDetails.statut == "Anonyme"){this.isPublic = false;}
     this.isSeeDetails = true; this.isSeeArticleInfos = true;
   }
 

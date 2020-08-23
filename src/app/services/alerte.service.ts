@@ -135,6 +135,10 @@ export class AlerteService {
     return this.httpService.deleteLocaliteTarget("wallu/alertes/"+postData.alerte+"/suivi_localites/", postData);
   } 
 
+  deleteAgenceTarget(postData: Suivi_Alerte_Agence): Observable<any> {
+    return this.httpService.deleteAgenceTarget("wallu/alertes/"+postData.alerte+"/suivi_agences/", postData);
+  }
+
   killAlerte(postData: Alerte): Observable<any> {
     return this.httpService.killAlerte('wallu/alertes/', postData);
   }
@@ -195,6 +199,9 @@ export class AlerteService {
     return this.httpService.getAllAlerteCoordonnees('wallu/alertes/all_locations/');
   }
 
+  ajouterAgenceTarget(postData: Suivi_Alerte_Agence): Observable<Suivi_Alerte_Agence> {
+    return this.httpService.ajouterAgenceTargetAlerte('wallu/alertes/', postData);
+  }
 
 
 

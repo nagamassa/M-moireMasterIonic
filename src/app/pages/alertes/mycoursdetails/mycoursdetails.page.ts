@@ -29,6 +29,7 @@ import { Plugins } from '@capacitor/core';
 import { filter } from 'rxjs/operators';
 import { Storage } from '@ionic/storage';
 import { Subscription } from 'rxjs';
+import { ArticleService } from 'src/app/services/article.service';
 
 declare var google;
 // ====================================================================================
@@ -57,7 +58,8 @@ export class MycoursdetailsPage implements OnInit {
 
 
   marker:any; latitude:any=""; longitude:any="";  timestamp:any=""; deviceToken: string = ""; 
-  isPreparation:boolean = false;  isHistorique:boolean = false;  isCours:boolean = false;
+  isPreparation:boolean = false;  isHistorique:boolean = false;  isCours:boolean = false; isBoth:boolean = false;
+  isPublic:boolean = false;
 
   base:string = environment.apiUrl; base64Image:any; 
   newPiece = {id: null,article: null,alerte: null,proprio: '',type: '',titre: '',piece: null, texto: '',datePiece: null}
@@ -72,6 +74,8 @@ export class MycoursdetailsPage implements OnInit {
   agencesFollower: Suivi_Alerte_Agence[];     isAgencesFollower: boolean = false;  isAgencesView: boolean = false;
   pesonnesFollower: Suivi_Alerte_Perso[];     isPesonnesFollower: boolean = false; isPesonnesView: boolean = true;
 
+  fullAgencesFollower: any[] = [];
+
   usersFollower: Utilisateur[]=[];            nbFollowerRecus: number = 0;         nbFollowerRepondu: number = 0;
   groupFollowerData: Groupe[]=[];             localiteFollowerData: Localite[]=[];
   nbNotYet: number = 0;                       wantAdd: boolean = false;
@@ -79,7 +83,7 @@ export class MycoursdetailsPage implements OnInit {
   textMessage: string = ""; coords : {} = {};  type: string = "";
   isOther: boolean = true;  backPage:string = ""; from:string = "";
 
-  constructor(private authService: AuthService, public alerteService : AlerteService, public piecesService : PiecesService,
+  constructor(private authService: AuthService, public articleService : ArticleService, public alerteService : AlerteService, public piecesService : PiecesService,
     public storageService : StorageService, private router: Router, private activatedRoute: ActivatedRoute,
     private modalController: ModalController, public actionSheetCtrl: ActionSheetController,
     private camera:Camera, private mediaCapture:MediaCapture, private file: File, private filePath: FilePath,
@@ -117,12 +121,14 @@ resetBadgeCount() {
 
 async loadData(){
   this.backPage = this.activatedRoute.snapshot.params["backPage"];
-  if(this.backPage=="/folder/alertes/options/coursalerte"){this.isCours = true; this.from = "coursalerte";}
-  else if(this.backPage=="/folder/alertes/options/prealerte"){this.isPreparation = true; this.from = "prealerte";}
-  else if(this.backPage=="/folder/alertes/options/histalerte"){this.isHistorique = true; this.from = "histalerte";}
+  if(this.backPage=="/folder/alertes/options/coursalerte"){this.isCours = true; this.from = "coursalerte"; this.isBoth = true;}
+  else if(this.backPage=="/folder/alertes/options/prealerte"){this.isPreparation = true; this.from = "prealerte"; this.isBoth = true;}
+  else if(this.backPage=="/folder/alertes/options/histalerte"){this.isHistorique = true; this.from = "histalerte"; this.isBoth = false;}
   const ALERTEID = this.activatedRoute.snapshot.params["id"];      
   this.alerteService.getAlerte(ALERTEID).subscribe(res1=>{
     this.alerteDetalis=res1;  if(this.alerteDetalis){this.isAlerteDetalis = true;}
+    if(this.alerteDetalis.profil == "Anonyme"){this.isPublic = false;}
+    else if(this.alerteDetalis.profil == "Public"){this.isPublic = true;}
     this.alerteService.getAlerteAuteur(ALERTEID).subscribe(res2=>{
       this.auteur = res2; this.auteur.photo = environment.apiUrl + this.auteur.photo; this.isAuteur = true;
       if(this.auteur){this.isAuteur = true;}
@@ -141,7 +147,17 @@ async loadData(){
               let i=0; for(let elem of this.localiteFollower){ i++;} if(i){this.isLocaliteFollower = true;}
               this.alerteService.getAlerteAgences(ALERTEID).subscribe(res7=>{
                 this.agencesFollower = res7; 
-                let i=0; for(let elem of this.agencesFollower){ i++;} if(i){this.isAgencesFollower = true;}
+                let i=0; for(let elem of this.agencesFollower){ 
+                  i++;
+                  // 
+                  this.articleService.getAgenceData(elem.agence).subscribe(re=>{
+                    this.articleService.getAgenceLocalite(re.localite).subscribe(re2=>{
+                      this.fullAgencesFollower.push({suivi_agence: elem, agence:re, localite: re2});
+                      console.log(JSON.stringify(this.fullAgencesFollower));
+                    },er=>{console.log(er);});
+                  },er=>{console.log(er);});
+                  // 
+                } if(i){this.isAgencesFollower = true;}
                 this.alerteService.getAlerteFollower(ALERTEID).subscribe(res8=>{
                   this.pesonnesFollower = res8;
                   this.nbFollowerRepondu=0; this.nbFollowerRecus=0; this.nbNotYet=0;
@@ -173,6 +189,20 @@ async loadData(){
   },er=>{console.log(er);});
 }
 
+changerProfil(profil:string){
+  this.alerteDetalis.profil = profil;
+  if(this.isPublic == false){ 
+    this.alerteService.changeAlerteInfos(this.alerteDetalis).subscribe(res1=>{
+      this.isPublic = true;   console.log(JSON.stringify(this.alerteDetalis));
+    },er=>{console.log(er);});
+  }
+  else if(this.isPublic == true){ 
+    this.alerteService.changeAlerteInfos(this.alerteDetalis).subscribe(res1=>{
+      this.isPublic = false;  console.log(JSON.stringify(this.alerteDetalis));
+    },er=>{console.log(er);});
+  }
+}
+
 // Début des actionsheets
 async presentActionSheet() {
   const actionSheet =await this.actionSheetCtrl.create({    
@@ -201,7 +231,7 @@ async presentCiblesSheet() {
       { text: 'Localite', icon: 'map', 
         handler: () => { this.newLocaliteFollower(); }
       },{ text: 'Agence', icon: 'business', 
-        handler: () => {  }
+        handler: () => { this.loadAgences(); }
       },{ text: 'Contact', icon: 'person-circle', 
         handler: () => { this.loadContact(); }
       },
@@ -368,6 +398,10 @@ loadContact(){
   this.router.navigate(['/folder/alertes/options/coursalerte/contactsalerte', this.alerteDetalis.id, {"from": this.from}]);    
 }
 
+loadAgences(){
+  this.router.navigate(['/folder/alertes/options/coursalerte/contactsalerte', this.alerteDetalis.id,'newalerteagencefollower', {"from": this.from}]);    
+}
+
 newGroupeFollower(){
   this.router.navigate(['/folder/alertes/options/coursalerte/contactsalerte', this.alerteDetalis.id,'newgroupefollowers', {"from": this.from}]);    
 }
@@ -449,6 +483,12 @@ killLocaliteFollower(localiteFollowerVictime: Suivi_Alerte_Localite){
         },er=>{console.log(er); });
       }
     },er=>{console.log(er);});
+  },er=>{console.log("Erreur killing cible localite: ",JSON.stringify(er));});
+}
+
+killAgenceFollower(AgenceFollowerVictime: Suivi_Alerte_Agence){
+  this.alerteService.deleteAgenceTarget(AgenceFollowerVictime).subscribe(res=>{
+    console.log(JSON.stringify(AgenceFollowerVictime)," deleted successfully");
   },er=>{console.log("Erreur killing cible localite: ",JSON.stringify(er));});
 }
 

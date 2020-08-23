@@ -40,27 +40,35 @@
       </ion-card-header>
       <ion-card-content class="desc">
         <p><b>Profil: </b> {{alerteDetalis?.profil}} </p>
-        <p><b>Status: </b>  {{alerteDetalis?.statut}} </p>
+        <!-- <p><b>Status: </b>  {{alerteDetalis?.statut}} </p> -->
         <p><b>Date :</b>  {{alerteDetalis?.dateAlerte | date}} à {{alerteDetalis?.dateAlerte | date:'H:mm:ss'}} </p>
-        <p><b>déja utilisée :</b>  {{alerteDetalis?.utilisee}} </p>
+        <!-- <p><b>déja utilisée :</b>  {{alerteDetalis?.utilisee}} </p> -->
         <p><b>type:</b>  {{alerteDetalis?.type}} </p>
       </ion-card-content>
     </ion-card>
 
   <ion-card [hidden]="!isAuteur">
-    <ion-img src="{{auteur?.photo}}"></ion-img>
-    <ion-card-header>
-      <ion-item>
-        <ion-label> Victime </ion-label>
-      </ion-item><br>
-      <ion-card-subtitle> alias {{auteur?.alias}} </ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content class="desc">
-      <h5>Descriptions:</h5> <p> {{auteur?.description}} </p>
-
-    </ion-card-content>
+    <div [hidden]="!isPublic">
+      <ion-img src="{{auteur?.photo}}"></ion-img>
+      <ion-card-header>
+        <ion-item>
+          <ion-label> Victime </ion-label>
+        </ion-item><br>
+        <ion-card-subtitle> alias {{auteur?.alias}} </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content class="desc">
+        <h5>Descriptions:</h5> <p> {{auteur?.description}} </p>
+      </ion-card-content>
+    </div>
+    <div [hidden]="!isBoth">
+      <div [hidden]="isOther">
+        <ion-button [hidden]="!isPublic" expand="block" (click)="changerProfil('Anonyme')" color = "primary"> Go to Anonyme</ion-button>
+        <ion-button [hidden]="isPublic" expand="block" (click)="changerProfil('Public')" color = "primary"> Go to Public</ion-button>
+      </div>
+    </div>
   </ion-card>
-  <ion-card [hidden]="isAuteur"><ion-item><ion-label> Pas d'infos sur la victime' </ion-label></ion-item></ion-card>
+
+  <ion-card [hidden]="isPublic"><ion-item><ion-label> Utilisateur anonyme </ion-label></ion-item></ion-card>
   <!--  -->
   <ion-toolbar>
     <ion-segment value="follower">
@@ -158,9 +166,18 @@
       </ion-card-header>
       <ion-card-content>
         <ion-list>
-          <ion-item class="lab" *ngFor="let af of agencesFollower">
-            <ion-label>{{af?.localite}}</ion-label>
-            <!-- <ion-note slot="end" color="primary">{{af?.nombreReception}} - {{af?.nombreReponse}}</ion-note> -->
+          <ion-item class="lab" *ngFor="let af of fullAgencesFollower">
+          <!--  -->
+          <ion-label>{{af.agence?.nom}} <br> <b>Adresse:</b> {{af.localite?.region +": "+af.localite?.adresse}} <br> <b>Type:</b> {{af.agence?.type}} </ion-label>
+          <div [hidden]="!isPreparation">
+            <ion-fab horizontal="end" vertical="bottom" slot="">
+              <ion-fab-button (click)="killAgenceFollower(af.suivi_agence)" color="danger"
+                style="margin: 0px; margin-right: 0px; width: 25px; height: 25px; line-height: 25px;">
+                <ion-icon name="close-circle"></ion-icon>
+              </ion-fab-button>
+            </ion-fab>
+          </div>
+          <!--  -->
           </ion-item>
         </ion-list>
       </ion-card-content>

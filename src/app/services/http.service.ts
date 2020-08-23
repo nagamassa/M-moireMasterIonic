@@ -285,6 +285,13 @@ deleteLocaliteTarget(serviceName: string, data: Suivi_Alerte_Localite) {
   return this.http.delete<any>(`${url}${data.id}/`, options);
 }
 
+deleteAgenceTarget(serviceName: string, data: Suivi_Alerte_Agence) {
+  const headers = new HttpHeaders({  });
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.delete<any>(`${url}${data.id}/`, options);
+}
+
 killAlerte(serviceName: string, data: Alerte) {
   const headers = new HttpHeaders({  });
   const options = { headers: headers, withCredintials: false };
@@ -405,13 +412,22 @@ allPostedArticles(serviceName: string, id: any) {
   return this.http.get<Article[]>(`${url} ${id}/`, options);
 }
 
-// =======================================================
-
 getAllAlerteCoordonnees(serviceName: string) {  
   const headers = new HttpHeaders({'Content-Type': 'application/json',});
   const options = { headers: headers, withCredintials: false };
   const url = environment.apiUrl +'/'+ serviceName;
   return this.http.get<Coordonnees[]>(`${url}`, options);
+}
+
+// =======================================================
+
+
+
+ajouterAgenceTargetAlerte(serviceName: string, data: Suivi_Alerte_Agence) {
+  const headers = new HttpHeaders({  });
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.post<Suivi_Alerte_Agence>(`${url} ${data.alerte}/suivi_agences/`, data, options);
 }
 
 // =====================================================

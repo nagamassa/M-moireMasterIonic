@@ -5,11 +5,14 @@
     </ion-buttons>
     <ion-title>Liste des contacts</ion-title>
   </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar></ion-searchbar>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content fullscreen>
    <ion-list>
-    <ion-list-header>Nouveaux membre du groupe: <br> {{groupeDetalis?.nom}} </ion-list-header>
+    <ion-list-header color="primary">Nouveaux membre du groupe: <br> {{groupeDetalis?.nom}} </ion-list-header>
     <ion-item-sliding *ngFor="let c of listContacts; let i = index">
       <ion-item (click)="loadSelected(selectedContact[i])">
         <ion-label>  <b> {{ c.displayName }} </b> <p> {{ c.phoneNumbers[0].value }} <br> {{selectedContact[i].slt}} </p> </ion-label>

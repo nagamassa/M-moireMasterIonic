@@ -40,6 +40,10 @@ const routes: Routes = [
       {
         path: 'coursalerte/contactsalerte/:id/newlocalitefollowers',
         loadChildren: () => import('./newlocalitefollowers/newlocalitefollowers.module').then( m => m.NewlocalitefollowersPageModule)
+      },
+      {
+        path: 'coursalerte/contactsalerte/:id/newalerteagencefollower',
+        loadChildren: () => import('./newalerteagencefollower/newalerteagencefollower.module').then( m => m.NewalerteagencefollowerPageModule)
       }
     ]
   },

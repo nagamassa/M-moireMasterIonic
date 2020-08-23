@@ -11,8 +11,17 @@
 </ion-header>
 
 <ion-content>
+    <!--  -->
+    <ion-toolbar>
+      <ion-segment value="follower">
+        <ion-segment-button (click)="seeTraitement()" value="follower"> Traitements </ion-segment-button>
+        <ion-segment-button (click)="seeDeno()" value="groupFollower"> Dénonciations</ion-segment-button>
+      </ion-segment>
+    </ion-toolbar>          
+    <!--  -->
 
   <ion-list>
+    <div [hidden]="!isTraitement">
       <ion-list-header  color="danger">
         <h5>Mes articles en cours de traitements</h5>
       </ion-list-header>
@@ -26,6 +35,23 @@
           Article {{elem.article?.statut}} en cours depuis {{elem.article.dateArticle | date}} à {{elem.article.dateArticle | date:'H:mm:ss' }}
         </ion-card-content>
       </ion-card>
+    </div>
+    <br>
+    <div [hidden]="!isDeno">
+      <ion-list-header  color="danger">
+        <h5>Mes articles de dénonciation</h5>
+      </ion-list-header>
+      <ion-card button *ngFor="let elem of (mesArticlesDeno)">
+        <ion-item>
+          <ion-icon name="newspaper" color="primary" slot="start"></ion-icon>
+          <ion-label>ID: {{elem.article.id}} <br> {{elem.user.alias}} <br> {{elem.article?.titre}} </ion-label>
+          <ion-button (click)="articleDetails(elem.article)" fill="outline" slot="end"> Plus </ion-button>
+        </ion-item>    
+        <ion-card-content>
+          Article {{elem.article?.statut}} en cours depuis {{elem.article.dateArticle | date}} à {{elem.article.dateArticle | date:'H:mm:ss' }}
+        </ion-card-content>
+      </ion-card>
+    </div>
   </ion-list>
 
 </ion-content>
