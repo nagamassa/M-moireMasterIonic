@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { AlerteService } from 'src/app/services/alerte.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ToastService } from 'src/app/services/toast.service';
-import { Alerte, Utilisateur, Suivi_Alerte_Perso, Localite, Suivi_Alerte_Localite } from 'src/app/types';
+import { Alerte, Utilisateur, Suivi_Alerte_Perso, Localite, Suivi_Alerte_Localite, Bloccage } from 'src/app/types';
 import { StorageService } from 'src/app/services/storage.service';
 import { AuthConstants } from 'src/app/config/auth-constants';
 import { PushservicesService } from 'src/app/services/pushservices.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-newlocalitefollowers',
@@ -22,6 +23,9 @@ export class NewlocalitefollowersPage implements OnInit {
   DateReception: null, DateReponse: null};
   pesonnesFollower: Suivi_Alerte_Perso[]; localiteFollowerData: Localite[]=[];
   backPage:string = ""; isCoursAlerte:boolean = false;
+
+  base:string = environment.apiUrl; 
+  public mesBloccages : Bloccage[] = []; public mesOwnBloccages : any[] = []; public mesOthersBloccages : any[] = [];
 
   constructor(public storageService: StorageService,public alerteService : AlerteService, private router: Router, private activatedRoute: ActivatedRoute,
     private toastService : ToastService, private PushService: PushservicesService, private authService: AuthService,
@@ -43,11 +47,37 @@ export class NewlocalitefollowersPage implements OnInit {
           for (let i of this.allLocalites) {this.selectedLocalite.push({realID:i.id, id:this.allLocalites.length-1,slt:'Faux',region:i.region, adresse:i.adresse});}
         },er=>{console.log(er); });
     },er=>{console.log(er);});
+    // 
+    this.storageService.get(AuthConstants.AUTHDATA).then(res =>{
+      this.alerteService.myOtherBlocks(res.id).subscribe(res1=>{this.mesBloccages = res1;},er=>{console.log(er); });
+    },err => { console.log('erreur getting local data', JSON.stringify(err)); }); 
+    // 
   }
 
   loadSelected(selectedElem){
     if(selectedElem.slt == 'Vrai'){selectedElem.slt = 'Faux'; console.log("changé en ", selectedElem.slt); }      
     else if(selectedElem.slt == 'Faux'){selectedElem.slt = 'Vrai'; console.log("changé en ", selectedElem.slt);}    
+  }
+
+  amIblockedBy(user, thissuiviAlertePerso, selectedAlerteid){ 
+    let isBlocked = 0;
+    for(let blc of this.mesBloccages){
+      if(blc.statut=="Bloqué" && blc.bloqueur == user){ isBlocked++; console.log("bloqué par: ",JSON.stringify(blc));}         
+    }
+    if(isBlocked == 0) { 
+    // ===========================================================================================
+    this.alerteService.ajouterPersonTarget(thissuiviAlertePerso).subscribe(res=>{
+      if(this.isCoursAlerte){
+        this.authService.getCurrenttUser(res.follower).subscribe((cu:any) => {
+          this.authService.userData$.subscribe(res0 => {
+            this.PushService.lancerNotification(selectedAlerteid, cu.idNotification, res0 );
+          });
+        })
+      }                      
+      console.log("cible personne bien ajouté", JSON.stringify(res));
+    },er=>{console.log("Erreur ajout de cible personne: ",JSON.stringify(er));});
+    // ===========================================================================================
+    }
   }
 
   ajouterCible(cibles, selectedAlerte){  
@@ -67,16 +97,9 @@ export class NewlocalitefollowersPage implements OnInit {
                 for(let f of this.pesonnesFollower){if(m.id==f.follower){notLinkedUser += 1;}} 
                 if(notLinkedUser == 0){
                   this.suiviAlertePerso.alerte = selectedAlerte.id; this.suiviAlertePerso.follower = m.id;
-                  this.alerteService.ajouterPersonTarget(this.suiviAlertePerso).subscribe(res=>{
-                    if(this.isCoursAlerte){
-                      this.authService.getCurrenttUser(res.follower).subscribe((cu:any) => {
-                        this.authService.userData$.subscribe(res0 => {
-                          this.PushService.lancerNotification(selectedAlerte.id, cu.idNotification, res0 );
-                        });
-                      })
-                    }                    
-                    console.log("cible personne bien ajouté", JSON.stringify(res));
-                  },er=>{console.log("Erreur ajout de cible personne: ",JSON.stringify(er));});
+                  // 
+                  this.amIblockedBy(m.id, this.suiviAlertePerso, selectedAlerte.id);
+                  //
                 } else{ console.log("membre is follower"); }
                 notLinkedUser = 0;
               }

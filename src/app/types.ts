@@ -57,3 +57,7 @@ export interface Suivi_Article_Agence {
 export interface Agence {
     id: number; localite?: number; coordonnees?: number; type?: string; nom?: string; phone?: number; email?: string;
 }
+
+export interface Bloccage {
+    id?: number; bloqueur?: number; bloque?: number; raison?: string; statut?: string; 
+}

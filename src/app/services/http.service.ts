@@ -6,7 +6,7 @@ import { headersToString } from 'selenium-webdriver/http';
 import { StorageService } from './storage.service';
 import { AuthConstants } from '../config/auth-constants';
 import { catchError, tap, map } from 'rxjs/operators';
-import { Alerte, Utilisateur, Coordonnees, PieceJointe, Suivi_Alerte_Group, Suivi_Alerte_Localite, Suivi_Alerte_Agence, Suivi_Alerte_Perso, Groupe, Membre, Localite, Article, Suivi_Article_Agence, Agence } from '../types';
+import { Alerte, Utilisateur, Coordonnees, PieceJointe, Suivi_Alerte_Group, Suivi_Alerte_Localite, Suivi_Alerte_Agence, Suivi_Alerte_Perso, Groupe, Membre, Localite, Article, Suivi_Article_Agence, Agence, Bloccage } from '../types';
 
 
 @Injectable({
@@ -419,15 +419,55 @@ getAllAlerteCoordonnees(serviceName: string) {
   return this.http.get<Coordonnees[]>(`${url}`, options);
 }
 
-// =======================================================
-
-
-
 ajouterAgenceTargetAlerte(serviceName: string, data: Suivi_Alerte_Agence) {
   const headers = new HttpHeaders({  });
   const options = { headers: headers, withCredintials: false };
   const url = environment.apiUrl +'/'+ serviceName;
   return this.http.post<Suivi_Alerte_Agence>(`${url} ${data.alerte}/suivi_agences/`, data, options);
+}
+
+myOwnBlocks(serviceName: string) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Bloccage[]>(`${url}`, options);
+}
+
+myOtherBlocks(serviceName: string) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Bloccage[]>(`${url}`, options);
+}
+
+// =======================================================
+
+newBlocage(serviceName: string, data: Bloccage) {
+  const headers = new HttpHeaders({  });
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.post<Bloccage>(`${url}`, data, options);
+}
+
+blockLoadeChanges(serviceName: string, data: any) {
+  const headers = new HttpHeaders({  });
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.put<Bloccage>(`${url}`, data, options);
+}
+
+unlockLoadeChanges(serviceName: string, data: any) {
+  const headers = new HttpHeaders({  });
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.delete<any>(`${url}`, options);
+}
+
+getAllUser(serviceName: string) {  
+  const headers = new HttpHeaders({'Content-Type': 'application/json',});
+  const options = { headers: headers, withCredintials: false };
+  const url = environment.apiUrl +'/'+ serviceName;
+  return this.http.get<Utilisateur[]>(`${url}`, options);
 }
 
 // =====================================================

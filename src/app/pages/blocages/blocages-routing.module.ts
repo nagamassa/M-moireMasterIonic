@@ -6,7 +6,11 @@ import { BlocagesPage } from './blocages.page';
 const routes: Routes = [
   {
     path: '',
-    component: BlocagesPage
+    component: BlocagesPage,
+  },
+  {
+    path: 'newblocagealerte',
+    loadChildren: () => import('./newblocagealerte/newblocagealerte.module').then( m => m.NewblocagealertePageModule)
   }
 ];
 

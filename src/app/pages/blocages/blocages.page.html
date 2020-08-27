@@ -3,13 +3,72 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Blocages</ion-title>
+    <ion-title>Les bloccages</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar></ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" >
-  <div id="container">
-    <strong class="capitalize">blocages</strong>
-    <p>Explore <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
+  <!--  -->
+  <ion-toolbar>
+    <ion-segment value="mines">
+      <ion-segment-button (click)="seeMines()" value="mines"> Mes victimes </ion-segment-button>
+      <ion-segment-button (click)="seeOthers()" value="others"> Mes bloqueurs </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>          
+  <!--  -->
+
+  <ion-list>
+    <div [hidden]="!isMines">
+      <ion-list-header  color="danger">
+        <h5>Mes victimes</h5>
+      </ion-list-header>
+      <ion-card button *ngFor="let elem of (mesOwnBloccages)">
+        <ion-item>
+          <ion-icon name="lock-closed" color="danger" slot="start"></ion-icon>
+          <ion-avatar slot="start">  <img [src]="elem.bloque.photo">  </ion-avatar>
+          <ion-label>ID: {{elem.block.id}} <br> {{elem.bloque.alias}}</ion-label>
+          <ion-button color="success" (click)="debloccage(elem)" fill="outline" slot="end"> <ion-icon color="success" name="lock-open-outline"></ion-icon> </ion-button>
+        </ion-item>    
+        <ion-card-content class="desc">
+          <!--  -->
+          <div [hidden]="elem.isSeeDetails" >
+            <ion-textarea rows = "10" [(ngModel)]="elem.block.raison"></ion-textarea>
+            <ion-button expand="block" (click)="chargerBloccage(elem)" color = "success"> Charger les modifs </ion-button>
+          </div>
+          <div [hidden]="!elem.isSeeDetails" >
+            <pre>{{ elem.block.raison }}</pre>
+            <ion-button expand="block" (click)="seeDeatilsArea(elem)" color = "primary"> Modifier </ion-button>
+          </div>
+          <!--  -->
+        </ion-card-content>
+      </ion-card>
+    </div>
+    <br>
+    <div [hidden]="!isOthers">
+      <ion-list-header color="danger">
+        <h5 class="center">Mes bloqueurs</h5>
+      </ion-list-header>
+      <ion-card button *ngFor="let elem of mesOthersBloccages">
+        <ion-item>
+          <ion-icon name="lock-closed" color="danger" slot="start"></ion-icon>
+          <ion-avatar slot="start">  <img [src]="elem.bloqueur.photo">  </ion-avatar>
+          <ion-label>ID: {{elem.block.id}} <br> {{elem.bloqueur.alias}} </ion-label>
+        </ion-item>    
+        <ion-card-content class="desc">
+          <pre> {{elem.block.raison}} </pre>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </ion-list>
+
+
 </ion-content>
+
+<ion-fab horizontal="end" vertical="bottom" slot="fixed" >
+  <ion-fab-button (click)="goToBlock()" color="primary">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>

@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { AlerteService } from 'src/app/services/alerte.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ToastService } from 'src/app/services/toast.service';
-import { Alerte, Groupe, Suivi_Alerte_Group, Membre, Utilisateur, Suivi_Alerte_Perso } from 'src/app/types';
+import { Alerte, Groupe, Suivi_Alerte_Group, Membre, Utilisateur, Suivi_Alerte_Perso, Bloccage } from 'src/app/types';
 import { StorageService } from 'src/app/services/storage.service';
 import { AuthConstants } from 'src/app/config/auth-constants';
 import { PushservicesService } from 'src/app/services/pushservices.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-newgroupefollowers',
@@ -22,6 +23,9 @@ export class NewgroupefollowersPage implements OnInit {
   reponse: "Faux", DateReception: null, DateReponse: null}; 
   pesonnesFollower: Suivi_Alerte_Perso[]; groupFollowerData: Groupe[]=[];
   backPage:string = ""; isCoursAlerte:boolean = false;
+
+  base:string = environment.apiUrl; 
+  public mesBloccages : Bloccage[] = []; public mesOwnBloccages : any[] = []; public mesOthersBloccages : any[] = [];
 
   constructor(public storageService: StorageService,public alerteService : AlerteService, private router: Router, private activatedRoute: ActivatedRoute,
     private toastService : ToastService, private PushService: PushservicesService, private authService: AuthService,
@@ -48,6 +52,9 @@ export class NewgroupefollowersPage implements OnInit {
           for (let i of this.MyLinkGroupes) { this.allGroupe.push(i); this.selectedGroupe.push({realID:i.id, id:this.allGroupe.length-1,slt:'Faux',nom:i.nom}); }  
           console.log("la taille est: ", this.allGroupe.length);  
         },er=>{console.log(er); });
+        // 
+        this.alerteService.myOtherBlocks(res.id).subscribe(blc=>{this.mesBloccages = blc;},er=>{console.log(er); });
+        // 
       },err => { console.log('erreur getting local data', JSON.stringify(err)); });
     },er=>{console.log(er);});
   }
@@ -57,8 +64,29 @@ export class NewgroupefollowersPage implements OnInit {
     else if(selectedElem.slt == 'Faux'){selectedElem.slt = 'Vrai'; console.log("changé en ", selectedElem.slt);}    
   }
 
-  ajouterCible(cibles, selectedAlerte){  
-    this.alerteService.getAlerteFollower(selectedAlerte.id).subscribe(res8=>{ this.pesonnesFollower = res8;},er=>{console.log(er);})
+  amIblockedBy(user, thissuiviAlertePerso, selectedAlerteid){ 
+    let isBlocked = 0;
+    for(let blc of this.mesBloccages){
+      if(blc.statut=="Bloqué" && blc.bloqueur == user){ isBlocked++; console.log("bloqué par: ",JSON.stringify(blc));}         
+    }
+    if(isBlocked == 0) { 
+    // ===========================================================================================
+    this.alerteService.ajouterPersonTarget(thissuiviAlertePerso).subscribe(res=>{
+      if(this.isCoursAlerte){
+        this.authService.getCurrenttUser(res.follower).subscribe((cu:any) => {
+          this.authService.userData$.subscribe(res0 => {
+            this.PushService.lancerNotification(selectedAlerteid, cu.idNotification, res0 );
+          });
+        })
+      }                      
+      console.log("cible personne bien ajouté", JSON.stringify(res));
+    },er=>{console.log("Erreur ajout de cible personne: ",JSON.stringify(er));});
+    // ===========================================================================================
+    }
+  }
+
+  ajouterCible(cibles, selectedAlerte){ 
+    this.alerteService.getAlerteFollower(selectedAlerte.id).subscribe(res8=>{this.pesonnesFollower = res8;},er=>{console.log(er);})
     let notLinked = 0; let notLinkedUser = 0;
     for (let i = 0; i < cibles.length; i++) { 
       notLinked = 0;
@@ -71,26 +99,17 @@ export class NewgroupefollowersPage implements OnInit {
             console.log("cible groupe bien ajouté", JSON.stringify(res));
             this.alerteService.getGroupeMembres(cibles[i].realID).subscribe(res2=>{
               this.membres = res2;
-                for(let m of this.membres){ 
-                  notLinkedUser = 0; 
-                  for(let f of this.pesonnesFollower){if(m.user_member==f.follower){notLinkedUser += 1;}} 
-                  if(notLinkedUser == 0){
-                    this.suiviAlertePerso.alerte = selectedAlerte.id; this.suiviAlertePerso.follower = m.user_member;
-                    // 
-                    this.alerteService.ajouterPersonTarget(this.suiviAlertePerso).subscribe(res=>{
-                      if(this.isCoursAlerte){
-                        this.authService.getCurrenttUser(res.follower).subscribe((cu:any) => {
-                          this.authService.userData$.subscribe(res0 => {
-                            this.PushService.lancerNotification(selectedAlerte.id, cu.idNotification, res0 );
-                          });
-                        })
-                      }                      
-                      console.log("cible personne bien ajouté", JSON.stringify(res));
-                    },er=>{console.log("Erreur ajout de cible personne: ",JSON.stringify(er));});
-                    // 
-                  } else{ console.log("membre is follower"); }
-                  notLinkedUser = 0;
-                }              
+              for(let m of this.membres){ 
+                notLinkedUser = 0; 
+                for(let f of this.pesonnesFollower){if(m.user_member==f.follower){notLinkedUser += 1;}} 
+                if(notLinkedUser == 0){
+                  this.suiviAlertePerso.alerte = selectedAlerte.id; this.suiviAlertePerso.follower = m.user_member;
+                  // 
+                  this.amIblockedBy(m.user_member, this.suiviAlertePerso, selectedAlerte.id);
+                  // 
+                } else{ console.log("membre is follower"); }
+                notLinkedUser = 0;
+              }              
             },er=>{console.log(er);});
           },er=>{console.log("Erreur ajout de cible groupe: ",JSON.stringify(er));});
       } else {console.log(cibles[i].nom," erreur de ciblage");}

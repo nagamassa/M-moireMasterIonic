@@ -4,7 +4,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { HttpService } from './http.service';
 import { StorageService } from './storage.service';
 import { AuthConstants } from '../config/auth-constants';
-import { Alerte, Suivi_Alerte_Perso, Utilisateur, Coordonnees, PieceJointe, Suivi_Alerte_Group, Suivi_Alerte_Localite, Suivi_Alerte_Agence, Groupe, Membre, Localite } from '../types';
+import { Alerte, Suivi_Alerte_Perso, Utilisateur, Coordonnees, PieceJointe, Suivi_Alerte_Group, Suivi_Alerte_Localite, Suivi_Alerte_Agence, Groupe, Membre, Localite, Bloccage } from '../types';
 
 @Injectable({
   providedIn: 'root'
@@ -203,6 +203,29 @@ export class AlerteService {
     return this.httpService.ajouterAgenceTargetAlerte('wallu/alertes/', postData);
   }
 
+  myOwnBlocks(postData: any): Observable<Bloccage[]>{
+    return this.httpService.myOwnBlocks('wallu/alertes/my_bloccages/'+ postData +'/');
+  }
+
+  myOtherBlocks(postData: any): Observable<Bloccage[]>{
+    return this.httpService.myOtherBlocks('wallu/alertes/other_bloccages/'+ postData +'/');
+  }
+
+  blockLoadeChanges(postData: Bloccage): Observable<Bloccage> {
+    return this.httpService.blockLoadeChanges('wallu/alertes/all_bloccages/'+ postData.id +'/', postData);
+  }
+
+  unlockLoadeChanges(postData: Bloccage): Observable<any> {
+    return this.httpService.unlockLoadeChanges('wallu/alertes/all_bloccages/'+ postData.id +'/', postData);
+  }
+
+  getAllUser(): Observable<Utilisateur[]>{
+    return this.httpService.getAllUser('wallu/utilisateurs/');
+  }
+
+  newBlocage(postData: Bloccage): Observable<Bloccage> {
+    return this.httpService.newBlocage('wallu/alertes/all_bloccages/', postData);
+  }
 
 
 

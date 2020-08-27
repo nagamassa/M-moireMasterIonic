@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Liste des utilisateurs</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar (ionChange)="loadChangeEvent(searchVB)" [(ngModel)]="searchVB"></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+  <ion-list>
+   <ion-list-header color="primary" style="font-size: 100%;">Nouveau cible de blocage </ion-list-header>
+   <ion-item-sliding *ngFor="let us of selectedUsers; let i = index">
+     <div [hidden]="!us.wantSee">
+      <ion-item (click)="loadSelected(selectedUsers[i])">
+        <ion-checkbox color="primary"  slot="start" ></ion-checkbox>
+        <ion-avatar slot="start" (click)="openProfile(us.user.photo)">  <img [src]="us.user.photo">  </ion-avatar>
+        <ion-label> ID: {{us.user.id}}  <b> {{ us.user.alias }} </b> </ion-label>
+      </ion-item>  
+    </div>    
+   </ion-item-sliding>  
+  </ion-list>
+ 
+</ion-content>
+
+<ion-fab horizontal="end" vertical="bottom" slot="fixed">
+  <ion-fab-button color="light" (click)="ajouterCible(selectedUsers)">
+    Bloquer 
+  </ion-fab-button>
+</ion-fab>
